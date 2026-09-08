@@ -1,0 +1,96 @@
+
+.columns-story-wrapper {
+  box-sizing: border-box;
+}
+.columns-story-wrapper .columns-story {
+  box-sizing: border-box;
+}
+.columns-story-wrapper .columns-story .columns-story-row {
+  box-sizing: border-box;
+}
+
+.columns-story > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.columns-story img {
+  width: 100%;
+}
+
+.columns-story > div > div {
+  order: 1;
+}
+
+.columns-story > div > .columns-story-img-col {
+  order: 0;
+}
+
+.columns-story > div > .columns-story-img-col img {
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  max-height: 500px;
+}
+
+.columns-story .columns-story-video-col {
+  order: 0;
+}
+
+.columns-story video {
+  display: block;
+  width: 100%;
+}
+
+
+@media (width >= 900px) {
+  .columns-story > div {
+    align-items: center;
+    flex-direction: unset;
+    gap: 24px;
+  }
+
+  .columns-story > div > div {
+    flex: 1;
+    order: unset;
+  }
+}
+
+
+
+
+/* Responsive Styles */
+@media (width < 1024px) {
+  .columns-story-container .columns-story-wrapper {
+    padding: 0 5%;
+  }
+  .columns-story-container .columns-story-wrapper .columns-story {
+    display: block;
+  }
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 20px 0;
+  }
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h1, 
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h2, 
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h3, 
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h4, 
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h5, 
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h6 {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+  }
+  
+}
+
+@media (width < 768px) { 
+
+  .columns-story-container .columns-story-wrapper {
+    padding: 0 4%;
+  }
+
+}
+

@@ -1,0 +1,37 @@
+{
+  "variantName": "cards-rating",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-09-08T21:13:43.353Z",
+  "sourceContext": {
+    "originUrl": "https://www.agcocorp.com/us/en/home/sustainability.html",
+    "originPage": "AGCO sustainability landing page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "rating-badge",
+    "imagePattern": "icon"
+  },
+  "contentPattern": {
+    "structure": "rating logo image + short description + scale/subtext caption",
+    "buttonCount": 0,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "row of ESG/award rating badge cards with logo image and caption"
+    ],
+    "notSuitableFor": [
+      "feature cards with CTAs and long body copy"
+    ]
+  },
+  "usage": {
+    "pagesUsing": [
+      "/us/en/home/sustainability"
+    ],
+    "reuseCount": 1,
+    "lastUsed": "2026-09-08T21:13:43.353Z"
+  }
+}

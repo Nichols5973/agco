@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "projectType": "xwalk"
+  },
+  "templates": [
+    {
+      "name": "home",
+      "urls": [
+        "https://www.agcocorp.com/us/en/home/sustainability.html"
+      ],
+      "representativeUrl": "https://www.agcocorp.com/us/en/home/sustainability.html",
+      "urlPattern": "/us/en/home/*",
+      "description": "Sustainability landing page: immersive hero, story columns, framework cards, ESG rating cards, and themed download sections",
+      "blocks": [
+        {
+          "name": "hero-immersive",
+          "instances": [".immersive-lead"]
+        },
+        {
+          "name": "columns-story",
+          "instances": ["section.text-and-asset"]
+        },
+        {
+          "name": "cards-framework",
+          "instances": [".multicolumncomp"]
+        },
+        {
+          "name": "cards-rating",
+          "instances": [".infographic-card-carousel-grid"]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1",
+          "name": "Hero",
+          "selector": ".immersivelead > .immersive-lead",
+          "style": null,
+          "blocks": ["hero-immersive"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2",
+          "name": "Intro Story",
+          "selector": ["div.theme-container.blue-theme:nth-of-type(1)"],
+          "style": "blue",
+          "blocks": ["columns-story"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-3",
+          "name": "Framework Heading",
+          "selector": "#maincontent > main.container.responsivegrid.maincontent > div.cmp-container > div.cmp.cmp-text",
+          "style": null,
+          "blocks": [],
+          "defaultContent": ["div.cmp.cmp-text"]
+        },
+        {
+          "id": "section-4",
+          "name": "Framework Cards",
+          "selector": "div.multicolumncomp",
+          "style": null,
+          "blocks": ["cards-framework"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-5",
+          "name": "Sustainability Suite",
+          "selector": ["div.theme-container.tan-theme:nth-of-type(7)"],
+          "style": "tan",
+          "blocks": [],
+          "defaultContent": []
+        },
+        {
+          "id": "section-6",
+          "name": "ESG Ratings",
+          "selector": "div.infographic-card-carousel-grid",
+          "style": null,
+          "blocks": ["cards-rating"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-7",
+          "name": "Legacy of Progress",
+          "selector": ["div.theme-container.tan-theme:nth-of-type(12)"],
+          "style": "tan",
+          "blocks": [],
+          "defaultContent": []
+        },
+        {
+          "id": "section-8",
+          "name": "Story Teaser 1",
+          "selector": ["div.theme-container.blue-theme:nth-of-type(14)"],
+          "style": "blue",
+          "blocks": ["columns-story"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-9",
+          "name": "Story Teaser 2",
+          "selector": ["div.theme-container.tan-theme:nth-of-type(15)"],
+          "style": "tan",
+          "blocks": ["columns-story"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-10",
+          "name": "Story Teaser 3",
+          "selector": ["div.theme-container.blue-theme:nth-of-type(16)"],
+          "style": "blue",
+          "blocks": ["columns-story"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-11",
+          "name": "Story Teaser 4",
+          "selector": ["div.theme-container.tan-theme:nth-of-type(17)"],
+          "style": "tan",
+          "blocks": ["columns-story"],
+          "defaultContent": []
+        }
+      ]
+    }
+  ]
+}

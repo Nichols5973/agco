@@ -1,0 +1,19 @@
+{
+  "status": "success",
+  "url": "https://www.agcocorp.com/us/en/home/sustainability.html",
+  "path": "us/en/home/sustainability",
+  "timestamp": "2026-09-08T21:29:50.429Z",
+  "title": "Sustainability - Farmer first. Future focused. | AGCO Corporation",
+  "template": "home",
+  "blocks": [
+    "hero-immersive",
+    "columns-story",
+    "columns-story",
+    "columns-story",
+    "columns-story",
+    "columns-story",
+    "cards-framework",
+    "cards-framework",
+    "cards-rating"
+  ]
+}

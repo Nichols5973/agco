@@ -1,0 +1,16 @@
+{
+  "type": "xwalk",
+  "sites": {
+    "agco": {
+      "previewOrg": "Nichols5973",
+      "previewSite": "agco",
+      "contentHostUrl": "author-p87302-e1492027.adobeaemcloud.com",
+      "aemSitePath": "/content/agco",
+      "aemAssetsFolderPath": "/content/dam/agco",
+      "aemSiteName": "agco",
+      "aemSiteTitle": "agco",
+      "baseUrl": "https://www.agcocorp.com/us/en/home/sustainability.html",
+      "libraryUrl": "https://main--sta-xwalk-boilerplate--aemysites.aem.page/tools/sidekick/library.json"
+    }
+  }
+}
