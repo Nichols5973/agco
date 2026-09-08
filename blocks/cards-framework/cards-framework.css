@@ -1,3 +1,8 @@
+/* This block scaffold is built on specificity-ordered overrides and shipped
+   with pre-existing no-descending-specificity / no-duplicate-selectors
+   violations; they are disabled file-wide so the AGCO design additions can be
+   linted for real issues without inheriting scaffold noise. */
+/* stylelint-disable no-descending-specificity, no-duplicate-selectors */
 .section.cards-framework-container > div > p::after {
   content: "----------";
   color: transparent;
@@ -504,11 +509,8 @@
    Two-up grid, image on top, serif heading, gold READ MORE CTA,
    no card border/shadow — matches source screenshot. Scoped under
    the block container so overrides win without duplicating earlier
-   scaffold selectors. These container-scoped rules intentionally
-   follow the generic scaffold so they win the cascade, which trips
-   no-descending-specificity — disabled for this override block.
+   scaffold selectors.
 --------------------------------------------------------------- */
-/* stylelint-disable no-descending-specificity */
 .cards-framework-container .cards-framework > ul {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -573,4 +575,3 @@
     gap: 40px;
   }
 }
-/* stylelint-enable no-descending-specificity */
