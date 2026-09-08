@@ -1,0 +1,38 @@
+{
+  "variantName": "columns-story",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-09-08T21:13:43.353Z",
+  "sourceContext": {
+    "originUrl": "https://www.agcocorp.com/us/en/home/sustainability.html",
+    "originPage": "AGCO sustainability landing page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "themed",
+    "density": "spacious",
+    "purpose": "story-teaser",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "heading + body paragraphs + back link on one side, photo on the other",
+    "buttonCount": 1,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "side-by-side text + image story teasers",
+      "intro text-and-asset sections"
+    ],
+    "notSuitableFor": [
+      "grids of repeating cards"
+    ]
+  },
+  "usage": {
+    "pagesUsing": [
+      "/us/en/home/sustainability"
+    ],
+    "reuseCount": 1,
+    "lastUsed": "2026-09-08T21:13:43.353Z"
+  }
+}

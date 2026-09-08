@@ -1,0 +1,37 @@
+{
+  "variantName": "hero-immersive",
+  "baseBlock": "hero",
+  "version": "1.0.0",
+  "created": "2026-09-08T21:13:43.353Z",
+  "sourceContext": {
+    "originUrl": "https://www.agcocorp.com/us/en/home/sustainability.html",
+    "originPage": "AGCO sustainability landing page",
+    "blockPosition": "top"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "spacious",
+    "purpose": "hero",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "eyebrow + heading + intro paragraph over full-bleed image",
+    "buttonCount": 0,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "immersive full-bleed hero with background image and overlaid title/intro"
+    ],
+    "notSuitableFor": [
+      "side-by-side hero with separate image panel"
+    ]
+  },
+  "usage": {
+    "pagesUsing": [
+      "/us/en/home/sustainability"
+    ],
+    "reuseCount": 1,
+    "lastUsed": "2026-09-08T21:13:43.353Z"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "variantName": "cards-framework",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-09-08T21:13:43.353Z",
+  "sourceContext": {
+    "originUrl": "https://www.agcocorp.com/us/en/home/sustainability.html",
+    "originPage": "AGCO sustainability landing page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "feature",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "photo + heading + description + Read More link",
+    "buttonCount": 1,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "grid of framework/pillar feature cards with image, title, description and CTA"
+    ],
+    "notSuitableFor": [
+      "logo/rating badge cards without CTA"
+    ]
+  },
+  "usage": {
+    "pagesUsing": [
+      "/us/en/home/sustainability"
+    ],
+    "reuseCount": 1,
+    "lastUsed": "2026-09-08T21:13:43.353Z"
+  }
+}
