@@ -89,12 +89,13 @@
 
 
 
-/* Card Generic Styles*/
+/* Card Generic Styles */
 .cards-rating > ul {
   display: flex;
   gap: 20px;
   padding: 10px 0;
 }
+
 .cards-rating > ul > li {
   background: var(--background-color) 0 0 no-repeat padding-box;
   box-shadow: none;
@@ -107,10 +108,12 @@
   flex: 1;
   flex-direction: column;
 }
+
 .cards-rating > ul > li .cards-rating-card-image {
   position: relative;
   display: block;
 }
+
 .cards-rating > ul > li .cards-rating-card-body {
   display: block;
   background-color: var(--background-color);
@@ -118,16 +121,19 @@
   box-sizing: border-box;
   margin: 0;
 }
+
 .cards-rating > ul > li .cards-rating-card-body h1 {
   margin: 0;
   font-size: 26px;
   line-height: 36px;
 }
+
 .cards-rating > ul > li .cards-rating-card-body p {
   margin: 10px 0;
   font-size: 18px;
   line-height: 26px;
 }
+
 .cards-rating > ul > li .cards-rating-card-body p.button-container {
   margin: 0;
 }
@@ -142,11 +148,13 @@
   border-radius: 4px;
   flex-direction: column;
 }
+
 .cards-rating > ul > li.image-top .cards-rating-card-body h1 {
   margin: 0;
   font-size: 22px;
   line-height: 32px;
 }
+
 .cards-rating > ul > li.image-top .cards-rating-card-body p {
   margin: 10px 0;
   font-size: 16px;
@@ -162,6 +170,7 @@
   border-radius: 4px;
   flex-direction: column-reverse;
 }
+
 .cards-rating > ul > li.image-bottom .cards-rating-card-body h1 {
   margin: 0;
   font-size: 22px;
@@ -184,11 +193,13 @@
   flex-direction: row;
   gap: 20px;
 }
+
 .cards-rating > ul > li.image-left .cards-rating-card-image {
   display: inline-flex;
   flex-grow: 1;
   flex-basis: 0;
 }
+
 .cards-rating > ul > li.image-left .cards-rating-card-body {
   padding: 0;
   margin: 10px 20px;
@@ -197,21 +208,25 @@
   flex-basis: 0;
   align-items: center;
 }
+
 .cards-rating > ul > li.image-left .cards-rating-card-body h1 {
   margin: 0;
   font-size: 22px;
   line-height: 32px;
 
 }
+
 .cards-rating > ul > li.image-left .cards-rating-card-body p {
   margin: 10px 0;
   font-size: 16px;
   line-height: 24px;
 }
+
 .cards-rating > ul > li.image-left picture {
   width: 100%;
   height: 100%;
 }
+
 .cards-rating > ul > li.image-left img {
   width: 100%;
   height: 100%;
@@ -232,11 +247,13 @@
   flex-direction: row-reverse;
   gap: 20px;
 }
+
 .cards-rating > ul > li.image-right .cards-rating-card-image {
   display: inline-flex;
   flex-grow: 1;
   flex-basis: 0;
 }
+
 .cards-rating > ul > li.image-right .cards-rating-card-body {
   padding: 0;
   margin: 10px 20px;
@@ -245,21 +262,25 @@
   flex-basis: 0;
   align-items: center;
 }
+
 .cards-rating > ul > li.image-right .cards-rating-card-body h1 {
   margin: 0;
   font-size: 22px;
   line-height: 32px;
 
 }
+
 .cards-rating > ul > li.image-right .cards-rating-card-body p {
   margin: 10px 0;
   font-size: 16px;
   line-height: 24px;
 }
+
 .cards-rating > ul > li.image-right picture {
   width: 100%;
   height: 100%;
 }
+
 .cards-rating > ul > li.image-right img {
   width: 100%;
   height: 100%;
@@ -280,11 +301,13 @@
   gap: 0;
   position: relative;
 }
+
 .cards-rating > ul > li.teaser-overlay .cards-rating-card-image {
   display: inline-flex;
   flex-grow: 1;
   flex-basis: 0;
 }
+
 .cards-rating > ul > li.teaser-overlay .cards-rating-card-body {
   width: 100%;
   height: 100%;
@@ -294,35 +317,42 @@
   flex-basis: 0;
   align-items: center;
   position: absolute;
-  background-color: rgba(0, 0, 0, .5);
+  background-color: rgb(0 0 0 / 50%);
   color: var(--text-light);
   display: block;
   align-content: center;
 }
+
 .cards-rating > ul > li.teaser-overlay .cards-rating-card-body div[data-aue-type="richtext"] {
   width: 50%;
 }
+
 .cards-rating > ul > li.teaser-overlay .cards-rating-card-body p.button-container a {
   color: var(--text-light);
 }
+
 .cards-rating > ul > li.teaser-overlay .cards-rating-card-body p.button-container a::after {
   color: var(--text-light);
 }
+
 .cards-rating > ul > li.teaser-overlay .cards-rating-card-body h1 {
   margin: 0;
   font-size: 22px;
   line-height: 32px;
 
 }
+
 .cards-rating > ul > li.teaser-overlay .cards-rating-card-body p {
   margin: 10px 0;
   font-size: 16px;
   line-height: 24px;
 }
+
 .cards-rating > ul > li.teaser-overlay picture {
   width: 100%;
   height: 100%;
 }
+
 .cards-rating > ul > li.teaser-overlay img {
   width: 100%;
   height: 100%;
@@ -342,53 +372,59 @@
   gap: 0;
   position: relative;
 }
+
 .cards-rating > ul > li.teaser-card .cards-rating-card-image {
   display: inline-flex;
   flex-grow: 1;
   flex-basis: 0;
 }
+
 .cards-rating > ul > li.teaser-card .cards-rating-card-body {
   width: auto;
   max-width: 50%;
   height: auto;
   padding: 20px;
   margin: auto;
-  display: inline-flex;
   flex-grow: 1;
   flex-basis: 0;
   position: absolute;
-  background-color: rgba(0, 0, 0, .5);
+  background-color: rgb(0 0 0 / 50%);
   border-radius: 4px;
   color: var(--text-light);
   text-align: center;
-  justify-content: center;
+  place-content: center center;
   align-items: center;
   bottom: 40px;
   left: 0;
   right: 0;
   display: block;
-    align-content: center;
 }
+
 .cards-rating > ul > li.teaser-card .cards-rating-card-body p.button-container a {
   color: var(--text-light);
 }
+
 .cards-rating > ul > li.teaser-card .cards-rating-card-body p.button-container a::after {
   color: var(--text-light);
 }
+
 .cards-rating > ul > li.teaser-card .cards-rating-card-body h1 {
   margin: 0;
   font-size: 22px;
   line-height: 32px;
 }
+
 .cards-rating > ul > li.teaser-card .cards-rating-card-body p {
   margin: 10px 0;
   font-size: 16px;
   line-height: 24px;
 }
+
 .cards-rating > ul > li.teaser-card picture {
   width: 100%;
   height: 100%;
 }
+
 .cards-rating > ul > li.teaser-card img {
   width: 100%;
   height: 100%;
@@ -400,6 +436,7 @@
 .cards-rating > ul > li.teaser-overlay  a.button{
   padding: 14px 15px !important;
 }
+
 .cards-rating > ul > li.teaser-card .cards-rating-card-body a.button{
    padding: 14px 15px !important;
 }
@@ -407,10 +444,10 @@
 
 /* Responsive Styles */
 @media (width < 1024px) {
-
   .cards-rating-container .cards-rating-wrapper {
     padding: 0 5%;
   }
+
   .cards-rating-container .cards-rating-wrapper .cards-rating > ul > li img {
     min-height: initial;
     max-height: initial;
@@ -436,15 +473,19 @@
     padding: 0;
     font-size: 20px;
   }
+
   .cards-rating > ul > li.teaser-overlay .cards-rating-card-body{
     width:100%;
   }
+
   .cards-rating-container .cards-rating-wrapper .cards-rating > ul > li.teaser-overlay img{
     min-height: 270px;
   }
+
   .cards-rating > ul > li.teaser-overlay .cards-rating-card-body div {
     width: 100%;
   }
+
   .cards-rating > ul > li.teaser-overlay .cards-rating-card-body div[data-aue-type="richtext"]{
     width: 100%;
   }
@@ -452,9 +493,81 @@
 
 
 @media (width < 768px) {
-
   .cards-rating-container .cards-rating-wrapper {
     padding: 0 4%;
   }
   
 }
+
+/* --------------------------------------------------------------
+   AGCO ESG rating cards (best-effort offline pass)
+   4-across row of rating badges: contained logo, centered caption,
+   small scale subtext, no card border/shadow. Sits in a light
+   section, so text stays dark. Scoped under the block container so
+   these overrides win without duplicating earlier scaffold selectors.
+   Container-scoped overrides intentionally follow the scaffold to win
+   the cascade, which trips no-descending-specificity — disabled here.
+--------------------------------------------------------------- */
+/* stylelint-disable no-descending-specificity */
+.cards-rating-container .cards-rating > ul {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px 32px;
+  padding: 0;
+}
+
+.cards-rating-container .cards-rating > ul > li {
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  background: transparent;
+  text-align: center;
+  align-items: center;
+}
+
+.cards-rating-container .cards-rating .cards-rating-card-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px;
+}
+
+.cards-rating-container .cards-rating .cards-rating-card-image img {
+  width: auto;
+  max-width: 100%;
+  max-height: 120px;
+  object-fit: contain;
+}
+
+.cards-rating-container .cards-rating .cards-rating-card-body {
+  padding: 16px 8px 0;
+  background: transparent;
+  text-align: center;
+}
+
+.cards-rating-container .cards-rating .cards-rating-card-body p {
+  font-family: var(--body-font-family);
+  color: var(--brand-body);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 6px 0;
+}
+
+.cards-rating-container .cards-rating .cards-rating-card-body p:first-child {
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+
+@media (width < 1024px) {
+  .cards-rating-container .cards-rating > ul {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width < 600px) {
+  .cards-rating-container .cards-rating > ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* stylelint-enable no-descending-specificity */

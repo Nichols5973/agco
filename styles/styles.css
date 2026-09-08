@@ -9,6 +9,8 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+@import url('brand.css');
+
 /*
  :root {
   --brand-theme-color: #ff0000;
@@ -44,11 +46,11 @@
   --footer-text-color: var(--brand-footer-text-color, #ffffff);
   
   /* fonts */
-  --body-font-family: 'Adobe Clean', roboto, roboto-fallback, sans-serif;
-  --heading-font-family: 'Adobe Clean Bold', roboto-condensed, roboto-condensed-fallback, sans-serif;
-  --light-font-family: 'Adobe Clean Light', roboto, roboto-fallback, sans-serif;
-  --extra-font-family: 'Adobe Clean Extra Bold', roboto, roboto-fallback, sans-serif;
-  --black-font-family: 'Adobe Clean Black', roboto, roboto-fallback, sans-serif;
+  --body-font-family: var(--brand-body-font, graphik, 'Helvetica Neue', arial, sans-serif);
+  --heading-font-family: var(--brand-heading-font, 'Tiempos Headline', georgia, serif);
+  --light-font-family: var(--brand-body-font, graphik, 'Helvetica Neue', arial, sans-serif);
+  --extra-font-family: var(--brand-heading-font, 'Tiempos Headline', georgia, serif);
+  --black-font-family: var(--brand-heading-font, 'Tiempos Headline', georgia, serif);
 
   /* body sizes */
   --body-font-size-m: 22px;
@@ -536,6 +538,49 @@ a.button:focus::after {
   color: var(--link-hover-color);
 }
 
+/* AGCO "READ MORE" CTA — thin gold-bordered uppercase box (offline pass) */
+.cards-framework a.button:any-link,
+.columns-story a.button:any-link {
+  display: inline-block;
+  border: 1px solid var(--brand-gold);
+  color: var(--brand-ink);
+  padding: 14px 26px;
+  font-family: var(--body-font-family);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+.cards-framework a.button:any-link::after,
+.columns-story a.button:any-link::after {
+  content: none;
+}
+
+.cards-framework a.button:hover,
+.cards-framework a.button:focus,
+.columns-story a.button:hover,
+.columns-story a.button:focus {
+  background-color: var(--brand-gold);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* On the dark teal "blue" story sections the CTA sits on teal — keep it legible */
+main .section.blue .columns-story a.button:any-link {
+  border-color: var(--brand-gold);
+  color: var(--text-light);
+}
+
+main .section.blue .columns-story a.button:hover {
+  background-color: var(--brand-gold);
+  color: #fff;
+}
+
 button:disabled,
 button:disabled:hover {
   color: var(--text-disabled);
@@ -669,6 +714,49 @@ main .section.highlight {
   background-color: var(--light-color);
   margin: 0;
   padding: 40px 0;
+}
+
+/* AGCO themed sections (best-effort offline pass) */
+main .section.blue {
+  background-color: var(--brand-teal);
+  color: var(--text-light);
+  margin: 0;
+  padding: 72px 0;
+}
+
+main .section.blue h1,
+main .section.blue h2,
+main .section.blue h3,
+main .section.blue h4,
+main .section.blue p,
+main .section.blue li,
+main .section.blue strong {
+  color: var(--text-light);
+}
+
+main .section.blue a:any-link {
+  color: var(--text-light);
+  text-decoration: underline;
+}
+
+main .section.tan {
+  background-color: var(--brand-tan);
+  color: var(--brand-ink);
+  margin: 0;
+  padding: 72px 0;
+  text-align: center;
+}
+
+main .section.tan h1,
+main .section.tan h2,
+main .section.tan h3 {
+  color: var(--brand-ink);
+}
+
+/* download link lists in tan sections read as stacked links */
+main .section.tan p a:any-link {
+  color: var(--brand-teal);
+  text-decoration: underline;
 }
 
 main .section[data-sec-spacing="section-none"] {

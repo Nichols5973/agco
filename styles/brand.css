@@ -1,0 +1,35 @@
+/*
+ * brand.css — AGCO brand tokens (best-effort offline pass)
+ *
+ * Colors/spacing estimated from the source screenshot of
+ * https://www.agcocorp.com/us/en/home/sustainability.html
+ * Webfonts (Tiempos-style serif headings, Graphik-style sans body) could not
+ * be loaded offline; named families with serif/sans fallbacks are used so the
+ * page renders with the correct feel. Refine against the live site when the
+ * browser sandbox is available.
+ */
+
+:root {
+  /* brand palette */
+  --brand-teal: #164e57;          /* dark-teal "blue" section background */
+  --brand-teal-dark: #123f47;
+  --brand-tan: #e7e0d3;           /* beige "tan" section background */
+  --brand-tan-dark: #ded5c4;
+  --brand-gold: #a9884f;          /* thin CTA border / accents */
+  --brand-ink: #1d1d1d;           /* headings */
+  --brand-body: #333;          /* body text */
+
+  /* map onto the theme's existing tokens */
+  --brand-background-color: #fff;
+  --brand-text-color: #1d1d1d;
+  --brand-light-text-color: #fff;
+  --brand-dark-color: #164e57;
+  --brand-light-color: #e7e0d3;
+  --brand-link-color: #164e57;
+  --brand-link-hover-color: #a9884f;
+  --brand-theme-color: #a9884f;
+
+  /* fonts — serif headings, sans body (AGCO look) */
+  --brand-heading-font: 'Tiempos Headline', 'Tiempos', georgia, 'Times New Roman', serif;
+  --brand-body-font: graphik, 'Helvetica Neue', arial, sans-serif;
+}

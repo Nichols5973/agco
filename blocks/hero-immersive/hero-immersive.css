@@ -31,24 +31,41 @@
 .hero-immersive h3,
 .hero-immersive h4,
 .hero-immersive h5,
-.hero-immersive h6,
-.hero-immersive p {
+.hero-immersive h6 {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   color: var(--text-light);
   text-align: center;
-  font-family: var(--black-font-family);
+  font-family: var(--heading-font-family);
+  font-weight: 400;
 }
 
-/* Special underline (only for h1 by default) */
+/* AGCO hero title: large serif headline (offline pass) */
+.hero-immersive h1 {
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.08;
+}
+
+.hero-immersive p {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  color: var(--text-light);
+  text-align: center;
+  font-family: var(--body-font-family);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* Special underline (only for h1 by default) — AGCO: restrained gold rule */
 .hero-immersive h1::after {
-  background-color: var(--main-accent-color);
+  background-color: var(--brand-gold, var(--main-accent-color));
   content: "";
   display: block;
-  height: 5px;
-  margin: 20px auto 30px;
-  width: 128px;
+  height: 3px;
+  margin: 24px auto 28px;
+  width: 96px;
   transition: width .4s ease-in-out;
 }
 
@@ -145,10 +162,10 @@ video.hero-immersive-video-bg {
 }
 
 .hero-immersive-wrapper .button-container.cta-button a.button:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgb(255 255 255 / 10%) !important;
   color: var(--text-light) !important;
   border-color: var(--text-light) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 30%) !important;
   transform: translateY(-1px);
 }
 
@@ -211,13 +228,16 @@ video.hero-immersive-video-bg {
   flex-direction: row;
   justify-content: flex-start;
 }
+
 .hero-immersive.image-right {
   flex-direction: row-reverse;
   justify-content: flex-start;
 }
+
 .hero-immersive.image-top {
   flex-direction: column;
 }
+
 .hero-immersive.image-bottom {
   flex-direction: column-reverse;
 }
@@ -296,14 +316,16 @@ video.hero-immersive-video-bg {
 picture {
     line-height: 0;
 }
+
 /* Box shadow for layout variations */
 .hero-immersive.image-left,
 .hero-immersive.image-right,
 .hero-immersive.image-top,
 .hero-immersive.image-bottom {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 15%);
   overflow: hidden;
 }
+
 .hero-immersive.image-left h2,
 .hero-immersive.image-left h3,
 .hero-immersive.image-left h4,
@@ -323,6 +345,7 @@ picture {
   color: var(--text-color);
     text-shadow: unset;
 }
+
 .hero-immersive.image-left h1,.hero-immersive.image-right h1{
   color: var(--text-color);
   text-shadow: unset;
@@ -340,7 +363,7 @@ picture {
 .hero-immersive.image-background-text-left h6,
 .hero-immersive.image-background-text-left p {
   text-align: left;
-  margin: 0 0 20px 0;
+  margin: 0 0 20px;
   width: 100%;
   max-width: none;
   color: var(--text-light);
@@ -359,7 +382,7 @@ picture {
 .hero-immersive.image-background-text-right h6,
 .hero-immersive.image-background-text-right p {
   text-align: left;
-  margin: 0 0 20px 0;
+  margin: 0 0 20px;
   width: 100%;
   max-width: none;
   color: var(--text-light);
@@ -389,6 +412,7 @@ picture {
   color: var(--text-color);
     text-shadow: unset;
 }
+
 /* --------------------------
    Responsive
 --------------------------- */
@@ -608,13 +632,13 @@ picture {
 
 /* Default semi-transparent backdrop for the text box — only when no Text
    Background Style is chosen, so Theme Dark/Light can take over the box bg. */
-.hero-immersive.block.overlay:not(.theme-dark):not(.theme-light) .hero-immersive-text,
-.hero-immersive.image-background-text-left:not(.theme-dark):not(.theme-light) .hero-immersive-text,
-.hero-immersive.image-background-text-right:not(.theme-dark):not(.theme-light) .hero-immersive-text {
+.hero-immersive.block.overlay:not(.theme-dark, .theme-light) .hero-immersive-text,
+.hero-immersive.image-background-text-left:not(.theme-dark, .theme-light) .hero-immersive-text,
+.hero-immersive.image-background-text-right:not(.theme-dark, .theme-light) .hero-immersive-text {
   background: rgb(0 0 0 / 50%);
 }
 
-/*button theme hero specific*/
+/* button theme hero specific */
 .hero-immersive.block.overlay .button-container.cta-link a.button,.hero-immersive.image-background-text-left .button-container.cta-link a.button,.hero-immersive.image-background-text-right .button-container.cta-link a.button {
   color: var(--text-light);
 }
@@ -630,6 +654,7 @@ picture {
   display: flex;
   align-items: center;
   width: fit-content;
+
   /* Centered by default so it matches the centered title in the overlay,
      asset-top and asset-bottom layouts. Auto side margins center a
      fit-content block; the left-aligned layouts override this below. */
@@ -640,9 +665,9 @@ picture {
   font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--text-light);
-  background: rgba(255, 255, 255, 0.2);
+  background: rgb(255 255 255 / 20%);
   backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
 }
 
 /* Left-aligned layouts: the badge hugs the left edge like the title/text. */
@@ -661,5 +686,22 @@ picture {
 .hero-immersive.image-top .hero-immersive__badge,
 .hero-immersive.image-bottom .hero-immersive__badge {
   color: var(--text-color);
-  background: rgba(0, 0, 0, 0.08);
+  background: rgb(0 0 0 / 8%);
+}
+
+/* --------------------------------------------------------------
+   AGCO hero tuning (best-effort offline pass)
+   Dark scrim over the photo for legibility (title/underline/intro
+   styling is merged into the base rules above).
+--------------------------------------------------------------- */
+.hero-immersive::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgb(0 0 0 / 15%) 0%,
+    rgb(0 0 0 / 45%) 100%
+  );
 }

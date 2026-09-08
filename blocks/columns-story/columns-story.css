@@ -2,9 +2,11 @@
 .columns-story-wrapper {
   box-sizing: border-box;
 }
+
 .columns-story-wrapper .columns-story {
   box-sizing: border-box;
 }
+
 .columns-story-wrapper .columns-story .columns-story-row {
   box-sizing: border-box;
 }
@@ -64,15 +66,18 @@
   .columns-story-container .columns-story-wrapper {
     padding: 0 5%;
   }
+
   .columns-story-container .columns-story-wrapper .columns-story {
     display: block;
   }
+
   .columns-story-container .columns-story-wrapper .columns-story .columns-story-row {
     display: flex;
     flex-direction: column;
     width: 100%;
     margin: 20px 0;
   }
+
   .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h1, 
   .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h2, 
   .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h3, 
@@ -87,10 +92,56 @@
 }
 
 @media (width < 768px) { 
-
   .columns-story-container .columns-story-wrapper {
     padding: 0 4%;
   }
 
 }
 
+
+/* --------------------------------------------------------------
+   AGCO story teaser tuning (best-effort offline pass)
+   Serif headings, generous column gap, comfortable body measure.
+   Text color is inherited from the section theme (.section.blue /
+   .section.tan) so these teasers work on both backgrounds.
+--------------------------------------------------------------- */
+.columns-story h2,
+.columns-story h3 {
+  font-family: var(--heading-font-family);
+  font-weight: 400;
+  font-size: clamp(28px, 3.2vw, 40px);
+  line-height: 1.2;
+  margin: 0 0 20px;
+}
+
+.columns-story p {
+  font-family: var(--body-font-family);
+  font-size: 17px;
+  line-height: 1.65;
+  margin: 0 0 18px;
+}
+
+.columns-story p > strong {
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+
+.columns-story ul,
+.columns-story ol {
+  font-family: var(--body-font-family);
+  font-size: 17px;
+  line-height: 1.65;
+  margin: 0 0 18px;
+  padding-left: 1.2em;
+}
+
+@media (width >= 900px) {
+  .columns-story > div {
+    gap: 56px;
+    align-items: center;
+  }
+
+  .columns-story > div > .columns-story-img-col img {
+    max-height: 560px;
+  }
+}
