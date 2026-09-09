@@ -95,6 +95,12 @@
   .columns-story--feature > div > .columns-story-img-col {
     flex: 0 0 54%;
   }
+
+  /* Alternate stories place the image on the LEFT (Clean Energy Lab, Safest
+     Year), matching the source's alternating layout. */
+  .columns-story--image-left > div {
+    flex-direction: row-reverse;
+  }
 }
 
 @media (width >= 1200px) {

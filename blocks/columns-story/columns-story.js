@@ -110,7 +110,17 @@ export default function decorate(block) {
   const isFeatureStory = [...block.querySelectorAll('a[href]')]
     .some((a) => /#(stories|story|action)/i.test(a.getAttribute('href') || '')
       || /back to action fields/i.test(a.textContent || ''));
-  if (isFeatureStory) block.classList.add('columns-story--feature');
+  if (isFeatureStory) {
+    block.classList.add('columns-story--feature');
+    // The feature stories alternate image side (source: PTx right, Clean Energy
+    // left, Reman right, Safest Year left). The image is always the 2nd DOM
+    // cell, so flip every other one. Index is taken across all columns-story
+    // blocks in document order (index 0 is the "Helping farmers" intro), which
+    // is stable regardless of per-block decoration timing.
+    const allStories = [...document.querySelectorAll('.columns-story')];
+    const idx = allStories.indexOf(block);
+    if (idx > 0 && idx % 2 === 0) block.classList.add('columns-story--image-left');
+  }
 
   // setup image columns
   [...block.children].forEach((row) => {
