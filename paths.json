@@ -1,14 +1,14 @@
 {
   "mappings": [
-    "/content/agco/configuration:/.helix/config.json",
-    "/content/agco/metadata:/metadata.json",
-    "/content/agco/redirects:/redirects.json",
-    "/content/agco/placeholders:/placeholders.json",
-    "/content/agco:/",
-    "/content/agco/:/"
+    "/content/agco/language-masters/configuration:/.helix/config.json",
+    "/content/agco/language-masters/metadata:/metadata.json",
+    "/content/agco/language-masters/redirects:/redirects.json",
+    "/content/agco/language-masters/placeholders:/placeholders.json",
+    "/content/agco/language-masters:/",
+    "/content/agco/language-masters/:/"
   ],
   "includes": [
-    "/content/agco/",
+    "/content/agco/language-masters/",
     "/content/dam/agco/"
   ]
 }
