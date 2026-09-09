@@ -188,6 +188,27 @@ export default function decorate(block) {
     }
   }
 
+  // --- For background (overlay) layouts, promote the hero image to a dedicated
+  //     background layer that is a DIRECT child of the block. Left inside the
+  //     asset wrapper div, the picture's `inset: 0` resolves against that
+  //     (zero-height) wrapper and collapses to 0x0 instead of filling the hero. ---
+  const isBackgroundLayout = [
+    'overlay',
+    'image-background-text-left',
+    'image-background-text-right',
+  ].includes(layoutStyle);
+
+  if (isBackgroundLayout && assetDiv) {
+    const bgPicture = assetDiv.querySelector('picture');
+    if (bgPicture) {
+      const bgLayer = document.createElement('div');
+      bgLayer.className = 'hero-immersive-bg';
+      bgLayer.appendChild(bgPicture);
+      block.prepend(bgLayer);
+      assetDiv.style.display = 'none';
+    }
+  }
+
   // --- Hide the asset div if it's empty (video link removed, or no asset authored) ---
   if (assetDiv && assetDiv.textContent.trim() === '' && !assetDiv.querySelector('picture, video')) {
     assetDiv.style.display = 'none';

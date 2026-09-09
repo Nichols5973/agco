@@ -19,13 +19,31 @@
   justify-content: center;
   overflow: hidden;
   box-sizing: border-box;
-  background-color: #000;
+
+  /* Dark fallback only — shown while the background photo loads. The
+     <picture> layer (z-index 0) paints over this, so it must NOT sit above
+     the image (a negative-z picture would hide behind this background). */
+  background-color: #1b1b1b;
 }
 
-/* Ensure all direct child divs stay within the hero bounds */
+/* Ensure all direct child divs stay within the hero bounds and sit ABOVE the
+   background photo. */
 .hero-immersive > div {
+  position: relative;
+  z-index: 1;
   max-width: 100%;
   box-sizing: border-box;
+}
+
+/* Scrim for text legibility over the photo (source hero image is fairly dark
+   already; a light gradient keeps the white text readable). */
+.hero-immersive::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, rgb(0 0 0 / 15%) 0%, rgb(0 0 0 / 45%) 100%);
+  pointer-events: none;
 }
 
 /* --------------------------
@@ -46,12 +64,12 @@
   font-family: var(--black-font-family);
 }
 
-/* Source immersive-lead title/description typography.
-   Source hero title is Noto Serif ~120px on desktop, scaling down on mobile. */
+/* Source immersive-lead title is Noto Serif; scaled to read comfortably over
+   the background photo (smaller than the source's very large 120px). */
 .hero-immersive h1 {
   font-family: var(--heading-font-family, 'Noto Serif', serif);
-  font-size: clamp(3rem, 8.5vw, 120px);
-  line-height: 1;
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  line-height: 1.05;
   font-weight: 500;
   text-wrap: balance;
 }
@@ -77,6 +95,11 @@
   transition: width .4s ease-in-out;
 }
 
+/* Source hero title has no underline bar — suppress it for overlay layout. */
+.hero-immersive.block.overlay h1::after {
+  display: none;
+}
+
 /* Left-aligned layouts: the title underline hugs the left like the title. */
 .hero-immersive.image-left h1::after,
 .hero-immersive.image-right h1::after,
@@ -98,16 +121,26 @@
 /* --------------------------
    Hero Background Image
 --------------------------- */
-.hero-immersive picture {
+
+/* Background image layer (direct child of the block, added by the JS for
+   overlay layouts) — fills the whole hero behind the scrim and content. */
+.hero-immersive .hero-immersive-bg,
+.hero-immersive > picture {
   position: absolute;
-  z-index: -1;
+  z-index: 0;
   inset: 0;
-  box-sizing: border-box;
+  margin: 0;
+}
+
+.hero-immersive .hero-immersive-bg picture {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .hero-immersive img {
   object-fit: cover;
-  object-position: left;
+  object-position: center;
   width: 100%;
   height: 100%;
 }
@@ -575,8 +608,8 @@ picture {
     padding: 24px 12px;
   }
 
-  .hero-immersive h1 { font-size: clamp(3rem, 12vw, 4rem); }
-  .hero-immersive h2 { font-size: 2rem; }
+  .hero-immersive h1 { font-size: clamp(2.25rem, 9vw, 3rem); }
+  .hero-immersive h2 { font-size: 1.75rem; }
 }
 
 /* --------------------------
@@ -634,12 +667,13 @@ picture {
   overflow-wrap: break-word;
 }
 
-/* Default semi-transparent backdrop for the text box — only when no Text
-   Background Style is chosen, so Theme Dark/Light can take over the box bg. */
+/* Source hero places text directly over the photo (no boxed backdrop). The
+   block-level ::after gradient scrim plus a text-shadow keeps it legible. */
 .hero-immersive.block.overlay:not(.theme-dark, .theme-light) .hero-immersive-text,
 .hero-immersive.image-background-text-left:not(.theme-dark, .theme-light) .hero-immersive-text,
 .hero-immersive.image-background-text-right:not(.theme-dark, .theme-light) .hero-immersive-text {
-  background: rgb(0 0 0 / 50%);
+  background: none;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 45%);
 }
 
 /* button theme hero specific */
