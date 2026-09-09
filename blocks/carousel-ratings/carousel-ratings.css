@@ -28,7 +28,10 @@
 }
 
 .carousel-ratings-container .carousel-ratings-wrapper .carousel-ratings {
-  padding: 5%;
+  /* Tighten the top gap between the section intro ("...Other highlights
+     include:") and the rating cards; keep horizontal padding for card gutters
+     and a small bottom pad. */
+  padding: 0 5% 2rem;
   position: relative;
 }
 
