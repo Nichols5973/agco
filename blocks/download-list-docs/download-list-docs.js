@@ -1,17 +1,8 @@
-import { isAuthorEnvironment } from '../../scripts/scripts.js';
-import { getMetadata } from '../../scripts/aem.js';
-import { getHostname } from '../../scripts/utils.js';
-
-const TYPE_MATCHERS = {
-  pdf: (mime, ext) => mime === 'application/pdf' || ext === 'pdf',
-  doc: (mime, ext) => /msword|officedocument\.wordprocessingml/.test(mime) || ext === 'doc' || ext === 'docx',
-  xls: (mime, ext) => /excel|officedocument\.spreadsheetml/.test(mime) || ext === 'xls' || ext === 'xlsx',
-  ppt: (mime, ext) => /powerpoint|officedocument\.presentationml/.test(mime) || ext === 'ppt' || ext === 'pptx',
-  image: (mime, ext) => mime.startsWith('image/') || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff', 'avif', 'ico'].includes(ext),
-  video: (mime, ext) => mime.startsWith('video/') || ['mp4', 'webm', 'mov', 'ogg', 'm4v', 'avi', 'mkv'].includes(ext),
-  audio: (mime, ext) => mime.startsWith('audio/') || ['mp3', 'wav', 'm4a', 'aac', 'flac', 'oga'].includes(ext),
-  zip: (mime, ext) => mime === 'application/zip' || ext === 'zip',
-};
+// Download List (docs) — renders a curated set of document download links as
+// outlined boxes, matching the AGCO "Sustainability Suite" / "Legacy of
+// Progress" sections. The links (label + document path) come straight from the
+// authored/imported block content, so the section renders identically on
+// preview, aem.live and publish with no server-side metadata fetch.
 
 function readConfig(block) {
   const config = {};
@@ -21,441 +12,88 @@ function readConfig(block) {
     const key = cells[0].textContent?.trim()?.toLowerCase();
     const valueCell = cells[1];
     const link = valueCell.querySelector('a');
-    const value = (link?.getAttribute('title') || link?.textContent || valueCell.textContent || '').trim();
+    // A value cell that contains anchors is a link list, not a scalar config
+    // value — skip it here (readDownloadLinks handles those).
+    if (link) return;
+    const value = (valueCell.textContent || '').trim();
     if (key) config[key] = value;
   });
   return config;
 }
 
-// Read any legacy multi-reference "Individual Files" row that previously
-// authored content may still contain. The current model only exposes the
-// Asset Folder field, but this read keeps old pages rendering instead of
-// silently dropping their lone picked asset.
-function readIndividualAssets(block) {
-  // Locate the value cell holding the picked assets. Prefer the editor's
-  // data-aue-prop marker (reliable in the Universal Editor); otherwise match the
-  // key-value row whose key mentions "individual" (individualAssets /
-  // "Individual Files" / "Individual Assets").
-  let valueCell = block.querySelector('[data-aue-prop="individualAssets"]');
-  if (!valueCell) {
-    const rows = [...block.querySelectorAll(':scope > div')];
-    rows.some((row) => {
-      const cells = row.querySelectorAll(':scope > div');
-      if (cells.length < 2) return false;
-      const key = (cells[0].textContent || '').toLowerCase().replace(/[^a-z]/g, '');
-      if (key.includes('individual')) {
-        [, valueCell] = cells;
-        return true;
-      }
-      return false;
-    });
-  }
-  if (!valueCell) return [];
+// Document-link matcher: DAM asset paths and common document extensions.
+const DOC_LINK_RE = /\/content\/dam\/|\.(pdf|xlsx?|docx?|pptx?|zip|csv)(\?|#|$)/i;
 
-  const paths = [];
+// Some pages author the first download link as loose default content in the
+// section intro rather than inside the block. Absorb any preceding paragraphs
+// whose sole content is a document link so all download boxes render together
+// as one row — matching the source layout. Returns the absorbed anchors
+// (removed from the DOM). A paragraph qualifies only when its single child is a
+// document link and the <p> has no other text.
+function isSoleDocLinkParagraph(p) {
+  if (!p || p.tagName !== 'P') return false;
+  const anchors = [...p.querySelectorAll('a[href]')];
+  return anchors.length === 1
+    && DOC_LINK_RE.test(anchors[0].getAttribute('href') || '')
+    && p.textContent.trim() === anchors[0].textContent.trim();
+}
+
+function absorbPrecedingDocLinks(block) {
+  const absorbed = [];
+
+  // The block lives inside a `.download-list-docs-wrapper`; the section's
+  // default content (intro paragraphs + any loose download link) is a separate
+  // `.default-content-wrapper` sibling of that wrapper. Walk up to the block's
+  // section-level wrapper, then look at the element before it.
+  const blockWrapper = block.closest('[class$="-wrapper"]') || block;
+  const prevWrapper = blockWrapper.previousElementSibling;
+  if (!prevWrapper) return absorbed;
+
+  // Pull in the trailing sole-document-link paragraphs from that wrapper, in
+  // document order, so they render before the block's own links.
+  const trailing = [];
+  let child = prevWrapper.lastElementChild;
+  while (isSoleDocLinkParagraph(child)) {
+    trailing.unshift(child);
+    child = child.previousElementSibling;
+  }
+  trailing.forEach((p) => {
+    absorbed.push(p.querySelector('a[href]'));
+    p.remove();
+  });
+
+  return absorbed;
+}
+
+// Collect the curated download anchors straight from the block DOM. Each link
+// carries the human label as its text and the document path as href.
+function readDownloadLinks(block, extraAnchors = []) {
+  const anchors = [...extraAnchors, ...block.querySelectorAll('a[href]')];
   const seen = new Set();
-  const push = (raw) => {
-    const p = (raw || '').trim();
-    if (!p || seen.has(p)) return;
-    seen.add(p);
-    paths.push(p);
-  };
-  // Asset references can render as links (href/title hold the DAM path) or as
-  // images/pictures (src may be an optimized delivery URL).
-  valueCell.querySelectorAll('a[href]').forEach((a) => {
-    push(a.getAttribute('title') || a.getAttribute('href') || '');
+  const links = [];
+  anchors.forEach((a) => {
+    const href = a.getAttribute('href') || '';
+    const label = (a.textContent || '').trim();
+    if (!href || !label) return;
+    const key = `${href}::${label}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    links.push({ href, label });
   });
-  valueCell.querySelectorAll('picture source[srcset]').forEach((s) => {
-    push((s.getAttribute('srcset') || '').split(/\s|,/)[0]);
-  });
-  valueCell.querySelectorAll('img[src]').forEach((img) => {
-    push(img.getAttribute('src') || '');
-  });
-  return paths;
+  return links;
 }
 
-function formatBytes(bytes) {
-  if (!bytes && bytes !== 0) return '';
-  const num = Number(bytes);
-  if (Number.isNaN(num)) return '';
-  if (num < 1024) return `${num} B`;
-  if (num < 1024 * 1024) return `${(num / 1024).toFixed(0)} KB`;
-  if (num < 1024 * 1024 * 1024) return `${(num / (1024 * 1024)).toFixed(num < 10 * 1024 * 1024 ? 1 : 0)} MB`;
-  return `${(num / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-}
-
-function getExtension(name) {
-  const idx = name.lastIndexOf('.');
-  return idx >= 0 ? name.slice(idx + 1).toLowerCase() : '';
-}
-
-// Normalize the folder path coming from the aem-content picker.
-// Possible inputs we've seen:
-//   /content/dam/my-site
-//   /content/dam/my-site.json
-//   urn:aemconnection:/content/dam/my-site
-//   /content/dam/my%20site   (URL-encoded)
-//   trailing slash variants
-function normalizeFolderPath(rawPath) {
-  if (!rawPath) return '';
-  let p = String(rawPath).trim();
-  p = p.replace(/^urn:aemconnection:/i, '');
-  try { p = decodeURIComponent(p); } catch (_) { /* keep as-is if malformed */ }
-  p = p.replace(/\.json$/, '');
-  p = p.replace(/\/$/, '');
-  return p;
-}
-
-function toAssetsApiPath(folderPath) {
-  const cleanPath = normalizeFolderPath(folderPath);
-  if (cleanPath.startsWith('/api/assets/')) return `${cleanPath}.json`;
-  if (cleanPath.startsWith('/content/dam/')) {
-    return `/api/assets/${cleanPath.slice('/content/dam/'.length)}.json`;
-  }
-  return `${cleanPath}.json`;
-}
-
-// Resolve the AEM base URLs for the current environment. On author we keep
-// relative URLs; on aem.live (or any non-author) we read the hostname from
-// placeholders.json and derive the publish AEM origin by swapping author→publish.
-async function resolveAemUrls() {
-  const isAuthor = isAuthorEnvironment();
-  if (isAuthor) {
-    return { isAuthor: true, listingBase: '', assetBase: '' };
-  }
-  let hostname = '';
-  try {
-    hostname = (await getHostname()) || '';
-  } catch (_) { /* ignore */ }
-  if (!hostname) hostname = getMetadata('hostname') || '';
-  const publishOrigin = hostname
-    ? hostname.replace('author', 'publish').replace(/\/$/, '')
-    : '';
-  return {
-    isAuthor: false,
-    listingBase: publishOrigin,
-    assetBase: publishOrigin,
-  };
-}
-
-// Parse the Siren-style response from /api/assets/<path>.json
-function parseAssetsApiResponse(data, isAuthor, assetBase) {
-  const entities = data.entities || [];
-  return entities
-    .filter((e) => Array.isArray(e.class) && e.class.includes('assets/asset'))
-    .map((e) => {
-      const props = e.properties || {};
-      const meta = props.metadata || {};
-      const name = props.name || (e.links?.find((l) => l.rel?.includes('content'))?.href || '').split('/').pop();
-      const mime = props['dc:format'] || props.format || meta['dc:format'] || '';
-      const size = Number(
-        props.size
-          || props.contentLength
-          || meta['dam:size']
-          || meta.size
-          || 0,
-      );
-      const modified = props['jcr:lastModified'] || props.lastModified || '';
-      const selfHref = e.links?.find((l) => l.rel?.includes('self'))?.href || '';
-      // selfHref from AEM is often an absolute URL ("https://publish-…/api/assets/…json").
-      // Convert /api/assets/ → /content/dam/ and strip .json, but DO NOT prepend
-      // assetBase again if the result is already absolute — that would double the host.
-      const damPath = selfHref.replace('/api/assets/', '/content/dam/').replace(/\.json$/, '');
-      const isAbsolute = /^https?:\/\//i.test(damPath);
-      const path = (isAuthor || isAbsolute) ? damPath : `${assetBase}${damPath}`;
-      return {
-        name, mime, size, modified, path,
-      };
-    });
-}
-
-// Parse the Sling JSON view of a DAM folder: /content/dam/<path>.1.json
-// Each immediate child is a key in the response object whose value is its node JSON.
-// We pick those that are dam:Asset (i.e. have a jcr:content/metadata).
-function parseSlingFolderResponse(data, folderDamPath, isAuthor, assetBase) {
-  const out = [];
-  Object.entries(data || {}).forEach(([key, val]) => {
-    if (!val || typeof val !== 'object') return;
-    if (key.startsWith('jcr:') || key.startsWith('rep:') || key.startsWith('cq:')) return;
-    const primary = val['jcr:primaryType'];
-    if (primary !== 'dam:Asset') return;
-    const meta = val['jcr:content']?.metadata || {};
-    const jcrContent = val['jcr:content'] || {};
-    const renditions = jcrContent.renditions || {};
-    const original = renditions.original || {};
-    const originalContent = original['jcr:content'] || {};
-    const mime = jcrContent['jcr:mimeType']
-      || meta['dc:format']
-      || originalContent['jcr:mimeType']
-      || '';
-    const size = Number(
-      meta['dam:size']
-        || originalContent['jcr:data']
-        || jcrContent['jcr:data']
-        || 0,
-    );
-    const modified = meta['jcr:lastModified']
-      || jcrContent['jcr:lastModified']
-      || val['jcr:lastModified']
-      || '';
-    const damChildPath = `${folderDamPath}/${key}`;
-    const isAbsolute = /^https?:\/\//i.test(damChildPath);
-    const path = (isAuthor || isAbsolute) ? damChildPath : `${assetBase}${damChildPath}`;
-    out.push({
-      name: key, mime, size, modified, path,
-    });
-  });
-  return out;
-}
-
-async function tryFetch(url, isAuthor) {
-  // eslint-disable-next-line no-console
-  console.debug('download-list: trying', url);
-  try {
-    const response = await fetch(url, isAuthor ? { credentials: 'include' } : {});
-    if (!response.ok) return { ok: false, status: response.status };
-    return { ok: true, data: await response.json() };
-  } catch (err) {
-    return { ok: false, error: err };
-  }
-}
-
-// Publish AEM caps Sling JSON depth at 1 for security, so `.3.json` on a folder
-// lists the assets but strips their jcr:content/metadata. A single asset's
-// `.3.json` is allowed, however — fetch each one in parallel and merge the
-// dam:size / dc:format / lastModified back into the listing.
-async function enrichAssetsWithMetadata(assets, listingBase, isAuthor) {
-  const needsFetch = assets.filter((a) => !a.size || !a.mime);
-  if (!needsFetch.length) return assets;
-  await Promise.all(needsFetch.map(async (asset) => {
-    const url = /^https?:\/\//i.test(asset.path)
-      ? `${asset.path}.3.json?ck=${Date.now()}`
-      : `${listingBase}${asset.path}.3.json?ck=${Date.now()}`;
-    const result = await tryFetch(url, isAuthor);
-    if (!result.ok || !result.data) return;
-    const jcrContent = result.data['jcr:content'] || {};
-    const meta = jcrContent.metadata || {};
-    const original = jcrContent.renditions?.original?.['jcr:content'] || {};
-    if (!asset.size) {
-      asset.size = Number(meta['dam:size'] || original['jcr:data'] || 0);
-    }
-    if (!asset.mime) {
-      asset.mime = jcrContent['jcr:mimeType'] || meta['dc:format'] || original['jcr:mimeType'] || '';
-    }
-    if (!asset.modified) {
-      asset.modified = meta['jcr:lastModified'] || jcrContent['jcr:lastModified'] || '';
-    }
-  }));
-  return assets;
-}
-
-async function fetchAssetsFromFolder(folderPath) {
-  const { isAuthor, listingBase, assetBase } = await resolveAemUrls();
-  if (!isAuthor && !listingBase) {
-    throw new Error('No publish hostname configured (placeholders.json hostname is empty).');
-  }
-  const folderDamPath = normalizeFolderPath(folderPath); // e.g. /content/dam/my-site
-
-  // Endpoint #1: Sling JSON view — `/content/dam/<path>.3.json`.
-  // On author depth 3 returns metadata inline. On publish depth is capped at 1
-  // so the listing returns asset nodes without jcr:content — we enrich below.
-  if (folderDamPath.startsWith('/content/dam/')) {
-    const slingUrl = `${listingBase}${folderDamPath}.3.json?ck=${Date.now()}`;
-    const slingResult = await tryFetch(slingUrl, isAuthor);
-    if (slingResult.ok && slingResult.data && typeof slingResult.data === 'object') {
-      const assets = parseSlingFolderResponse(slingResult.data, folderDamPath, isAuthor, assetBase);
-      if (assets.length) {
-        return enrichAssetsWithMetadata(assets, listingBase, isAuthor);
-      }
-    }
-  }
-
-  // Endpoint #2 (fallback): Assets HTTP API — Siren JSON (entities). Missing dam:size.
-  const apiPath = toAssetsApiPath(folderPath);
-  const apiUrl = `${listingBase}${apiPath}`;
-  const apiResult = await tryFetch(apiUrl, isAuthor);
-  if (apiResult.ok && Array.isArray(apiResult.data?.entities)) {
-    const assets = parseAssetsApiResponse(apiResult.data, isAuthor, assetBase);
-    return enrichAssetsWithMetadata(assets, listingBase, isAuthor);
-  }
-
-  const status = apiResult.status || 'unknown';
-  throw new Error(`Asset fetch failed: ${status} for ${apiUrl} (raw folderPath=${folderPath}). Sling JSON primary also failed.`);
-}
-
-// Build asset records from a list of individual picker paths (multi-reference
-// field). Each entry is either an absolute publish URL or a relative
-// /content/dam/... path. We construct a stub record and let
-// enrichAssetsWithMetadata fill in size/mime/lastModified via per-asset
-// Sling JSON fetches — same path used by the folder listing on publish.
-async function fetchAssetsFromIndividualPaths(rawPaths) {
-  const { isAuthor, listingBase, assetBase } = await resolveAemUrls();
-  if (!isAuthor && !listingBase) {
-    throw new Error('No publish hostname configured (placeholders.json hostname is empty).');
-  }
-  const records = [];
-  const seen = new Set();
-  rawPaths.forEach((raw) => {
-    let value = String(raw || '').trim();
-    if (!value) return;
-    value = value.replace(/^urn:aemconnection:/i, '');
-    try { value = decodeURIComponent(value); } catch (_) { /* keep as-is */ }
-    value = value.replace(/\.json$/, '').replace(/\/$/, '');
-    if (!value) return;
-
-    const isAbsolute = /^https?:\/\//i.test(value);
-    let pathname = value;
-    if (isAbsolute) {
-      try { pathname = new URL(value).pathname; } catch (_) { pathname = value; }
-    }
-
-    // Friendly name from the last path segment (strip query/hash).
-    const name = (pathname.split('/').pop() || value).split('?')[0].split('#')[0] || 'file';
-
-    // Resolve a fetchable download URL and (when available) the /content/dam
-    // path used for the Sling JSON metadata enrichment:
-    //  - /content/dam/... : enrichable; prepend the publish base on aem.live.
-    //  - anything else (optimized delivery URL, absolute) : used as-is.
-    let damPath = '';
-    let path;
-    if (pathname.startsWith('/content/dam/')) {
-      damPath = pathname;
-      if (isAbsolute) {
-        path = value;
-      } else if (isAuthor) {
-        path = pathname;
-      } else {
-        path = `${assetBase}${pathname}`;
-      }
-    } else {
-      path = isAbsolute ? value : `${assetBase || ''}${value}`;
-    }
-    if (seen.has(path)) return;
-    seen.add(path);
-    records.push({
-      name, mime: '', size: 0, modified: '', path, damPath,
-    });
-  });
-  if (!records.length) return [];
-  return enrichAssetsWithMetadata(records, listingBase, isAuthor);
-}
-
-function filterAssets(assets, fileTypes) {
-  if (!fileTypes || fileTypes === 'all') return assets;
-  const tokens = fileTypes.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
-  if (!tokens.length) return assets;
-  return assets.filter((a) => {
-    const ext = getExtension(a.name || '');
-    const mime = (a.mime || '').toLowerCase();
-    return tokens.some((t) => {
-      const matcher = TYPE_MATCHERS[t];
-      if (matcher) return matcher(mime, ext);
-      return ext === t || mime.includes(t);
-    });
-  });
-}
-
-function sortAssets(assets, sortBy) {
-  const list = [...assets];
-  switch (sortBy) {
-    case 'name-desc':
-      return list.sort((a, b) => b.name.localeCompare(a.name));
-    case 'modified':
-      return list.sort((a, b) => new Date(a.modified) - new Date(b.modified));
-    case 'modified-desc':
-      return list.sort((a, b) => new Date(b.modified) - new Date(a.modified));
-    case 'size':
-      return list.sort((a, b) => Number(a.size) - Number(b.size));
-    case 'size-desc':
-      return list.sort((a, b) => Number(b.size) - Number(a.size));
-    case 'name':
-    default:
-      return list.sort((a, b) => a.name.localeCompare(b.name));
-  }
-}
-
-function fileIconSvg(ext) {
-  const label = (ext || 'FILE').toUpperCase().slice(0, 4);
-  return `
-    <svg class="download-docs-row__svg" viewBox="0 0 30 40" fill="none" aria-hidden="true" focusable="false">
-      <rect x="1" y="1" width="28" height="38" rx="2" stroke="currentColor" stroke-width="2"></rect>
-      <path d="M18 1V9H28" stroke="currentColor" stroke-width="2"></path>
-      <rect x="1" y="22" width="23" height="13" rx="2" fill="var(--main-accent-color, #00A4E4)"></rect>
-      <text x="3" y="31" font-family="sans-serif" font-weight="700" font-size="8" fill="white">${label}</text>
-    </svg>`;
-}
-
-function downloadIconSvg() {
-  return `
-    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
-      <path d="M10 2v11M5 9l5 5 5-5M3 16h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-    </svg>`;
-}
-
-// Browsers ignore the <a download> attribute for cross-origin URLs (aem.live →
-// publish AEM origin), so PDFs/images open inline instead of downloading.
-// Fetch the asset as a blob and trigger the download via a same-origin object
-// URL — this preserves the original filename and forces "save as".
-async function triggerBlobDownload(url, filename) {
-  const response = await fetch(url, { credentials: 'omit' });
-  if (!response.ok) throw new Error(`Download failed: ${response.status}`);
-  const blob = await response.blob();
-  const objectUrl = URL.createObjectURL(blob);
+function buildDownloadBox({ href, label }) {
   const a = document.createElement('a');
-  a.href = objectUrl;
-  a.download = filename || '';
-  document.body.append(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-}
-
-function buildRow(asset, downloadLabel) {
-  const li = document.createElement('li');
-  li.className = 'download-docs-row';
-
-  const info = document.createElement('div');
-  info.className = 'download-docs-row__info';
-
-  const icon = document.createElement('div');
-  icon.className = 'download-docs-row__icon';
-  icon.innerHTML = fileIconSvg(getExtension(asset.name || ''));
-
-  const meta = document.createElement('div');
-  meta.className = 'download-docs-row__meta';
-  const nameEl = document.createElement('span');
-  nameEl.className = 'download-docs-row__name';
-  nameEl.textContent = asset.name;
-  meta.append(nameEl);
-  const sizeEl = document.createElement('span');
-  sizeEl.className = 'download-docs-row__size';
-  sizeEl.textContent = `File size : ${asset.size ? formatBytes(asset.size) : '—'}`;
-  meta.append(sizeEl);
-
-  info.append(icon, meta);
-
-  const link = document.createElement('a');
-  link.className = 'btn btn--outline download-docs-row__action';
-  if (!downloadLabel) link.classList.add('download-docs-row__action--icon-only');
-  link.href = asset.path;
-  link.setAttribute('download', asset.name || '');
-  link.setAttribute('aria-label', downloadLabel ? `${downloadLabel} ${asset.name}` : `Download ${asset.name}`);
-  link.innerHTML = downloadLabel
-    ? `${downloadIconSvg()} <span>${downloadLabel}</span>`
-    : downloadIconSvg();
-  link.addEventListener('click', async (e) => {
-    e.preventDefault();
-    try {
-      await triggerBlobDownload(asset.path, asset.name);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('download-list: blob download failed, falling back to direct link', err);
-      window.location.href = asset.path;
-    }
-  });
-
-  li.append(info, link);
-  return li;
+  a.className = 'download-docs__box';
+  a.href = href;
+  a.setAttribute('aria-label', label);
+  a.setAttribute('target', '_blank');
+  a.setAttribute('rel', 'noopener');
+  const span = document.createElement('span');
+  span.textContent = label;
+  a.append(span);
+  return a;
 }
 
 function renderEmpty(block, message) {
@@ -465,45 +103,19 @@ function renderEmpty(block, message) {
   block.append(empty);
 }
 
-async function fetchManifest(url) {
-  // eslint-disable-next-line no-console
-  console.debug('download-list: fetching manifest', url);
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Manifest fetch failed: ${response.status} for ${url}`);
-  const data = await response.json();
-  const files = Array.isArray(data) ? data : (data.files || []);
-  return files.map((f) => ({
-    name: f.name || (f.url || '').split('/').pop(),
-    mime: f.mime || f.format || '',
-    size: Number(f.size || 0),
-    modified: f.modified || '',
-    path: f.url || f.path || '',
-  }));
-}
-
-export default async function decorate(block) {
-  // IMPORTANT: read every input from the rendered block DOM BEFORE clearing it.
-  // `block.textContent = ''` empties all child nodes, so anything that queries
-  // the block (like readIndividualAssets) must run first.
+export default function decorate(block) {
   const config = readConfig(block);
-  const individualPaths = readIndividualAssets(block);
+  // Pull in any loose document link(s) authored just before the block so the
+  // whole set renders as one row of boxes (source layout).
+  const precedingLinks = absorbPrecedingDocLinks(block);
+  const links = readDownloadLinks(block, precedingLinks);
   const title = config.title || config['section title'] || '';
-  const manifestUrl = (config.manifesturl || config['manifest url (publish-friendly)'] || config['manifest url'] || '').trim();
-  const folderPath = config.assetfolder || config['asset folder'] || '';
-  const fileTypes = config.filetypes || config['file types'] || '';
-  const sortBy = config.sortby || config['sort by'] || 'name';
-  const limit = parseInt(config.limit || config['max items'] || '0', 10) || 0;
-  const downloadLabel = (config.downloadlabel || config['download button label'] || '').trim();
   const bgColor = (config.bgcolor || config['background color'] || '').trim();
   const textColor = (config.textcolor || config['text color'] || '').trim();
 
   block.textContent = '';
   block.classList.add('download-docs');
 
-  // Author-controlled colors. Set them inline (highest specificity, so they win
-  // over any inherited/global color rule) AND as custom properties (used by the
-  // row borders/hover so those track the chosen text color). Child elements use
-  // `color: inherit`, so the inline text color cascades to titles, names, etc.
   if (bgColor) {
     block.style.backgroundColor = bgColor;
     block.style.setProperty('--download-docs-bg', bgColor);
@@ -520,48 +132,13 @@ export default async function decorate(block) {
     block.append(heading);
   }
 
-  // Individual picker takes precedence over a folder/manifest, so an author
-  // can curate a list of specific files across multiple DAM folders.
-  if (!individualPaths.length && !manifestUrl && !folderPath) {
-    renderEmpty(block, 'No asset folder, individual files, or manifest URL configured.');
+  if (!links.length) {
+    renderEmpty(block, 'No downloads configured.');
     return;
   }
 
-  // Priority: individualAssets → manifestUrl → assetFolder.
-  // Same-origin JSON works on author and aem.live for manifestUrl. Folder and
-  // individual-picker paths both go through the Sling JSON metadata fetch.
-  let assets = [];
-  try {
-    if (individualPaths.length) {
-      assets = await fetchAssetsFromIndividualPaths(individualPaths);
-    } else if (manifestUrl) {
-      assets = await fetchManifest(manifestUrl);
-    } else {
-      assets = await fetchAssetsFromFolder(folderPath);
-    }
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('download-list: failed to fetch assets', err);
-    renderEmpty(block, 'Could not load files.');
-    return;
-  }
-
-  // Hand-picked individual files are shown as-is — the author already curated
-  // them, so the File Types filter only applies to folder/manifest listings.
-  if (!individualPaths.length) {
-    assets = filterAssets(assets, fileTypes);
-  }
-  assets = sortAssets(assets, sortBy);
-  if (limit > 0) assets = assets.slice(0, limit);
-
-  if (!assets.length) {
-    renderEmpty(block, 'No files found in this folder.');
-    return;
-  }
-
-  const list = document.createElement('ul');
+  const list = document.createElement('div');
   list.className = 'download-docs__list';
-  list.setAttribute('role', 'list');
-  assets.forEach((asset) => list.append(buildRow(asset, downloadLabel)));
+  links.forEach((link) => list.append(buildDownloadBox(link)));
   block.append(list);
 }
