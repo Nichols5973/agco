@@ -32,16 +32,17 @@ const components = {
   filters: JSON.parse(readFileSync(`${REPO}/component-filters.json`, 'utf-8')),
 };
 
-// The AEM content root for this site (from the fstab mountpoint
-// franklin.delivery/Nichols5973/agco -> JCR /content/agco).
-const SITE_ROOT = '/content/agco';
+// The AEM content root for this site. The site's pages live under the
+// language-masters node (confirmed by the Universal Editor URL
+// .../content/agco/language-masters/index.html), and paths.json maps
+// /content/agco/language-masters -> / (the home page).
+const SITE_ROOT = '/content/agco/language-masters';
 
-// Fragments to convert: [sourcePlainHtml, jcrPagePath]. The index IS the
-// site-root node (paths.json maps /content/agco -> /), so it serves as the home
-// page at /. nav/footer are child nodes fetched by header.js/footer.js.
-// [sourcePlainHtml, jcrPagePath, pageTitleOverride?]. When a title override is
-// given we set jcr:title (the browser <title> / page title) to it without
-// touching the authored content file.
+// [sourcePlainHtml, jcrPagePath, pageTitleOverride?]. The index IS the site's
+// language-masters node (maps to /), so it serves as the home page at /.
+// nav/footer are child nodes fetched by header.js/footer.js. When a title
+// override is given we set jcr:title (the browser <title> / page title) to it
+// without touching the authored content file.
 const PAGES = [
   ['content/us/en/home/sustainability.plain.html', `${SITE_ROOT}`, 'Sustainability | AGCO'],
   ['content/nav.plain.html', `${SITE_ROOT}/nav`],
@@ -50,7 +51,7 @@ const PAGES = [
 
 // Bump this when producing a new package so it is clearly identifiable and
 // overwrites the previously-installed one in AEM Package Manager.
-const VERSION = '1.2';
+const VERSION = '1.3';
 const PKG_NAME = 'agco-index-header-footer';
 
 const OUT = `${REPO}/tools/package/ue-package`;
