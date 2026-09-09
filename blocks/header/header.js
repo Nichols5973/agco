@@ -56,8 +56,18 @@ function buildBrandBar(section) {
   if (logoP) {
     const logo = document.createElement('div');
     logo.className = 'nav-logo';
+    // The logo may arrive as a linked image (<a><img></a>) or, after a JCR
+    // round-trip that unwraps solo linked-images, as a bare <picture>/<img>.
+    // Handle both: prefer an existing link, otherwise append the image itself.
     const link = logoP.querySelector('a');
-    if (link) logo.append(link);
+    const img = logoP.querySelector('picture, img');
+    if (link && link.querySelector('picture, img, svg')) {
+      logo.append(link);
+    } else if (img) {
+      logo.append(img);
+    } else if (link) {
+      logo.append(link);
+    }
     bar.append(logo);
   }
 
