@@ -17,7 +17,12 @@ import path from 'path';
 const REPO = '/workspace/current';
 const MODULES = '/home/node/.excat-marketplaces/excat-marketplace/excat/skills/excat-content-import/scripts/node_modules';
 
-const { html2md, md2jcr } = await import(`${MODULES}/@adobe/helix-importer/src/index.js`);
+const { html2md } = await import(`${MODULES}/@adobe/helix-importer/src/index.js`);
+// The markdown-level md2jcr(md, {models,definition,filters}) splits sections on
+// thematic breaks (`---`). We convert each authored section to markdown, join
+// with `---`, then run this. (The HTML-level md2jcr wrapper strips <hr>, so we
+// cannot express section breaks through the DOM.)
+const md2jcrFromMarkdown = (await import(`${MODULES}/@adobe/helix-md2jcr/src/index.js`)).md2jcr;
 const { JSDOM } = await import(`${MODULES}/jsdom/lib/api.js`);
 
 // Load the UE component config (built by npm run build:json)
@@ -34,8 +39,11 @@ const SITE_ROOT = '/content/agco';
 // Fragments to convert: [sourcePlainHtml, jcrPagePath]. The index IS the
 // site-root node (paths.json maps /content/agco -> /), so it serves as the home
 // page at /. nav/footer are child nodes fetched by header.js/footer.js.
+// [sourcePlainHtml, jcrPagePath, pageTitleOverride?]. When a title override is
+// given we set jcr:title (the browser <title> / page title) to it without
+// touching the authored content file.
 const PAGES = [
-  ['content/us/en/home/sustainability.plain.html', `${SITE_ROOT}`],
+  ['content/us/en/home/sustainability.plain.html', `${SITE_ROOT}`, 'Sustainability | AGCO'],
   ['content/nav.plain.html', `${SITE_ROOT}/nav`],
   ['content/footer.plain.html', `${SITE_ROOT}/footer`],
 ];
@@ -48,39 +56,168 @@ function wrapDoc(inner) {
   return `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><main>${inner}</main></body></html>`;
 }
 
-async function convert(srcRel) {
+// The block wrapper classes we authored in content/*.plain.html. Everything
+// else stays as default content.
+const BLOCK_CLASSES = [
+  'hero-immersive', 'columns-story', 'cards-framework', 'carousel-ratings',
+  'download-list-docs', 'section-metadata', 'metadata',
+];
+
+// "hero-immersive" -> "Hero Immersive" (matches the component title that
+// md2jcr looks up via getComponentByTitle).
+function titleFromClass(cls) {
+  return cls.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+/**
+ * Convert one authored block div (.block > rowDiv > cellDiv) into the EDS block
+ * TABLE form that html2md -> md2jcr recognizes. Without this the HTML->markdown
+ * step drops the class-only wrapper divs and every block flattens to loose
+ * title/text/button components.
+ */
+// Container blocks whose parent model carries config fields that md2jcr expects
+// as leading single-cell rows (after the header) before the repeating item
+// rows. We emit those rows with the model defaults so the item rows aren't
+// mis-consumed as config. Order MUST match the model field order.
+const CONTAINER_CONFIG_ROWS = {
+  'carousel-ratings': ['false', '5000', ''], // autoplay, autoplayInterval, imageZoom
+};
+
+function blockDivToTable(document, blockEl, cls) {
+  const rows = [...blockEl.children];
+  const cols = Math.max(1, ...rows.map((r) => r.children.length || 1));
+  const table = document.createElement('table');
+
+  const headTr = document.createElement('tr');
+  const th = document.createElement('th');
+  if (cols > 1) th.setAttribute('colspan', String(cols));
+  th.textContent = titleFromClass(cls);
+  headTr.appendChild(th);
+  table.appendChild(headTr);
+
+  // Prepend any parent-model config rows this container requires.
+  (CONTAINER_CONFIG_ROWS[cls] || []).forEach((val) => {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    if (cols > 1) td.setAttribute('colspan', String(cols));
+    td.textContent = val;
+    tr.appendChild(td);
+    table.appendChild(tr);
+  });
+
+  rows.forEach((row) => {
+    const tr = document.createElement('tr');
+    const cells = [...row.children];
+    if (cells.length === 0) {
+      // Row content sits directly in the row (no cell wrappers).
+      const td = document.createElement('td');
+      if (cols > 1) td.setAttribute('colspan', String(cols));
+      while (row.firstChild) td.appendChild(row.firstChild);
+      tr.appendChild(td);
+    } else {
+      cells.forEach((cell) => {
+        const td = document.createElement('td');
+        // Preserve field-hint comments + content so md2jcr maps fields.
+        while (cell.firstChild) td.appendChild(cell.firstChild);
+        tr.appendChild(td);
+      });
+    }
+    table.appendChild(tr);
+  });
+
+  blockEl.replaceWith(table);
+}
+
+/**
+ * download-list-docs is a key-value block whose `individualAssets` field is a
+ * `reference multi`. That shape does not round-trip cleanly through
+ * html2md -> md2jcr (multiple links in one key-value cell crash the mapper).
+ * The site's scripts.js `buildDownloadListBlocks` auto-block instead rebuilds
+ * this block at runtime from a single paragraph holding >= 2 document links.
+ * So we emit that paragraph form and let the runtime reconstruct the block —
+ * exactly how the local preview renders it.
+ */
+function downloadListToLooseLinks(document, blockEl) {
+  const anchors = [...blockEl.querySelectorAll('a[href]')];
+  if (anchors.length < 2) {
+    // Single-doc lists render fine as-is; just unwrap to a plain paragraph.
+    const p = document.createElement('p');
+    anchors.forEach((a) => p.appendChild(a));
+    blockEl.replaceWith(p);
+    return;
+  }
+  const p = document.createElement('p');
+  anchors.forEach((a) => p.appendChild(a));
+  blockEl.replaceWith(p);
+}
+
+/**
+ * Rewrite the block wrappers inside one section subtree into the table form
+ * md2jcr consumes. download-list-docs is emitted as loose links (the runtime
+ * rebuilds it — see above); every other recognized block becomes a table.
+ */
+function prepareSection(document, section) {
+  [...section.querySelectorAll('.download-list-docs')].forEach((el) => {
+    downloadListToLooseLinks(document, el);
+  });
+  BLOCK_CLASSES.filter((c) => c !== 'download-list-docs').forEach((cls) => {
+    [...section.querySelectorAll(`.${cls}`)].forEach((el) => {
+      blockDivToTable(document, el, cls);
+    });
+  });
+}
+
+// Convert one prepared section element to markdown via html2md.
+async function sectionToMarkdown(section, url) {
+  const { document } = new JSDOM(wrapDoc(section.innerHTML)).window;
+  const main = document.querySelector('main');
+  // Re-run the block transform in this fresh document (innerHTML copy).
+  prepareSection(document, main);
+  const res = await html2md(url, document, undefined, {}, {});
+  if (typeof res === 'string') return res;
+  if (res && res.md) return res.md;
+  if (Array.isArray(res) && res[0]?.md) return res[0].md;
+  throw new Error(`html2md produced no markdown for a section of ${url}`);
+}
+
+async function convert(srcRel, titleOverride) {
   const html = readFileSync(`${REPO}/${srcRel}`, 'utf-8');
+  const url = `https://main--agco--nichols5973.aem.page/${srcRel}`;
   const { document } = new JSDOM(wrapDoc(html)).window;
-  // html2md -> markdown, then md2jcr consumes markdown internally via the wrapper.
-  const res = await md2jcr(
-    `https://main--agco--nichols5973.aem.page/${srcRel}`,
-    document,
-    undefined,
-    { ...components, toJcr: true },
-    {},
-  );
-  // res may be an object with .jcr / .md or a string; normalize.
-  let jcr;
-  if (typeof res === 'string') jcr = res;
-  else if (res && res.jcr) jcr = res.jcr;
-  else if (Array.isArray(res) && res[0]?.jcr) jcr = res[0].jcr;
-  else throw new Error(`Unexpected md2jcr result for ${srcRel}: ${JSON.stringify(Object.keys(res || {}))}`);
+  const sections = [...document.querySelector('main').children];
+
+  // Convert each top-level section div to markdown, then join with thematic
+  // breaks so md2jcr's splitSection produces one JCR section per source div.
+  const perSection = [];
+  for (const section of sections) {
+    // eslint-disable-next-line no-await-in-loop
+    perSection.push(await sectionToMarkdown(section, url));
+  }
+  const md = perSection.join('\n\n---\n\n');
+
+  let jcr = await md2jcrFromMarkdown(md, components);
   // Escape any bare ampersands md2jcr left unescaped in attribute values
   // (e.g. "S&P Global"), which otherwise produce not-well-formed XML.
-  return jcr.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
+  jcr = jcr.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
+  // Apply the page-title override to jcr:title (the browser <title>) if given.
+  if (titleOverride) {
+    const esc = titleOverride.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    jcr = jcr.replace(/jcr:title="[^"]*"/, `jcr:title="${esc}"`);
+  }
+  return jcr;
 }
 
 async function main() {
   mkdirSync(JCR_ROOT, { recursive: true });
   const filterPaths = [];
-  for (const [srcRel, jcrPath] of PAGES) {
+  for (const [srcRel, jcrPath, titleOverride] of PAGES) {
     if (!existsSync(`${REPO}/${srcRel}`)) {
       console.warn(`SKIP missing ${srcRel}`);
       continue;
     }
     console.log(`Converting ${srcRel} -> ${jcrPath}/.content.xml`);
     // eslint-disable-next-line no-await-in-loop
-    const jcr = await convert(srcRel);
+    const jcr = await convert(srcRel, titleOverride);
     const dir = `${JCR_ROOT}${jcrPath}`;
     mkdirSync(dir, { recursive: true });
     writeFileSync(`${dir}/.content.xml`, jcr);

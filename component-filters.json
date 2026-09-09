@@ -45,6 +45,18 @@
     ]
   },
   {
+    "id": "cards-framework",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "carousel-ratings",
+    "components": [
+      "card"
+    ]
+  },
+  {
     "id": "columns",
     "components": [
       "column"
