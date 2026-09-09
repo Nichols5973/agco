@@ -52,7 +52,7 @@ const PAGES = [
 
 // Bump this when producing a new package so it is clearly identifiable and
 // overwrites the previously-installed one in AEM Package Manager.
-const VERSION = '1.4';
+const VERSION = '1.5';
 const PKG_NAME = 'agco-index-header-footer';
 
 const OUT = `${REPO}/tools/package/ue-package`;
@@ -187,10 +187,34 @@ async function sectionToMarkdown(section, url) {
   throw new Error(`html2md produced no markdown for a section of ${url}`);
 }
 
+/**
+ * Fragment images need two fixes so they survive the JCR round-trip AND
+ * resolve on the published site (where the fragment is served at /nav.plain.html
+ * and /footer.plain.html, so a relative `images/...` src would 404):
+ *  1. Rewrite relative `images/...` srcs to absolute `/content/images/...`.
+ *  2. Unwrap an anchor that contains ONLY an image (e.g. the logo). md2jcr
+ *     converts a solo linked-image into a button and drops the image; unwrapping
+ *     the anchor keeps it as an image component. (Anchors with an image plus
+ *     siblings already round-trip fine as richtext.)
+ */
+function normalizeFragmentImages(document) {
+  document.querySelectorAll('img[src^="images/"]').forEach((img) => {
+    img.setAttribute('src', `/content/${img.getAttribute('src')}`);
+  });
+  document.querySelectorAll('a').forEach((a) => {
+    const kids = [...a.childNodes].filter((n) => !(n.nodeType === 3 && !n.textContent.trim()));
+    if (kids.length === 1 && kids[0].nodeName === 'IMG') {
+      a.replaceWith(kids[0]);
+    }
+  });
+}
+
 async function convert(srcRel, titleOverride) {
   const html = readFileSync(`${REPO}/${srcRel}`, 'utf-8');
   const url = `https://main--agco--nichols5973.aem.page/${srcRel}`;
   const { document } = new JSDOM(wrapDoc(html)).window;
+  const isFragment = /\/(nav|footer)\.plain\.html$/.test(srcRel);
+  if (isFragment) normalizeFragmentImages(document);
   const sections = [...document.querySelector('main').children];
 
   // Convert each top-level section div to markdown, then join with thematic
