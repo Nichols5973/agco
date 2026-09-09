@@ -102,6 +102,16 @@ export default function decorate(block) {
   const cols = [...block.firstElementChild.children];
   block.classList.add(`columns-story-${cols.length}-cols`);
 
+  // Distinguish the two source layouts that share this block:
+  //  - the short "Helping farmers thrive" intro (small square image, text wider)
+  //  - the four feature stories (large image ~54%, narrower text), each of which
+  //    ends with a "Back to Action Fields" style link back to the story anchor.
+  // Tag the feature variant so the CSS can give the image the larger column.
+  const isFeatureStory = [...block.querySelectorAll('a[href]')]
+    .some((a) => /#(stories|story|action)/i.test(a.getAttribute('href') || '')
+      || /back to action fields/i.test(a.textContent || ''));
+  if (isFeatureStory) block.classList.add('columns-story--feature');
+
   // setup image columns
   [...block.children].forEach((row) => {
     row.classList.add('columns-story-row');

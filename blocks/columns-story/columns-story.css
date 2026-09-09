@@ -1,4 +1,4 @@
-/* stylelint-disable no-descending-specificity */
+/* stylelint-disable no-descending-specificity, selector-class-pattern */
 
 .columns-story-wrapper {
   box-sizing: border-box;
@@ -83,6 +83,17 @@
   .columns-story > div > .columns-story-img-col {
     flex: 0 0 35%;
     align-self: center;
+  }
+
+  /* Feature stories (PTx Trimble, Clean Energy Lab, Reman, Safest Year) give
+     the image the LARGER column (~54%) with narrower text (~38%), matching the
+     source text-and-asset--size-medium-standard layout. */
+  .columns-story--feature > div > div {
+    flex: 0 1 38%;
+  }
+
+  .columns-story--feature > div > .columns-story-img-col {
+    flex: 0 0 54%;
   }
 }
 
