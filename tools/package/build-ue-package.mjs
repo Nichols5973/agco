@@ -52,7 +52,7 @@ const PAGES = [
 
 // Bump this when producing a new package so it is clearly identifiable and
 // overwrites the previously-installed one in AEM Package Manager.
-const VERSION = '1.5';
+const VERSION = '1.6';
 const PKG_NAME = 'agco-index-header-footer';
 
 const OUT = `${REPO}/tools/package/ue-package`;
@@ -192,16 +192,21 @@ async function sectionToMarkdown(section, url) {
  * resolve on the published site (where the fragment is served at /nav.plain.html
  * and /footer.plain.html, so a relative `images/...` src would 404):
  *  1. Rewrite relative `images/...` srcs to absolute `/content/images/...`.
- *  2. Unwrap an anchor that contains ONLY an image (e.g. the logo). md2jcr
- *     converts a solo linked-image into a button and drops the image; unwrapping
- *     the anchor keeps it as an image component. (Anchors with an image plus
- *     siblings already round-trip fine as richtext.)
+ *  2. Unwrap ONLY a logo anchor that is the sole link in its paragraph (e.g.
+ *     the AGCO logo in its own <p>). md2jcr turns such a solo linked-image into
+ *     a button and drops the image; unwrapping keeps it as an image component.
+ *     Anchors that share a paragraph with sibling links (the brand-logo row,
+ *     social-icon row) MUST stay linked — they already round-trip fine as
+ *     richtext, and unwrapping them would strip their links and split the row.
  */
 function normalizeFragmentImages(document) {
   document.querySelectorAll('img[src^="images/"]').forEach((img) => {
     img.setAttribute('src', `/content/${img.getAttribute('src')}`);
   });
-  document.querySelectorAll('a').forEach((a) => {
+  document.querySelectorAll('p').forEach((p) => {
+    const links = [...p.querySelectorAll(':scope > a')];
+    if (links.length !== 1) return; // only lone-link paragraphs (the logo)
+    const a = links[0];
     const kids = [...a.childNodes].filter((n) => !(n.nodeType === 3 && !n.textContent.trim()));
     if (kids.length === 1 && kids[0].nodeName === 'IMG') {
       a.replaceWith(kids[0]);
