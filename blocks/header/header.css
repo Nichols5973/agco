@@ -57,12 +57,12 @@ header .header .nav-logo img {
 header .header .nav-brand-logos {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 20px;
 }
 
 header .header .nav-brand-logo img {
   display: block;
-  height: 34px;
+  height: 44px;
   width: auto;
 }
 
