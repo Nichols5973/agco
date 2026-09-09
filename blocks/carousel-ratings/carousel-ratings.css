@@ -101,6 +101,15 @@
   padding: 10px 0;
 }
 
+/* All four rating cards fit in one static row, so the slider's prev/next
+   navigation arrows are not needed here (the source shows a static grid).
+   Hiding them also removes the tall empty space they created below the cards. */
+.carousel-ratings > .button-container,
+.carousel-ratings .next,
+.carousel-ratings .prev {
+  display: none !important;
+}
+
 .carousel-ratings > ul > li {
   background: var(--background-color) 0 0 no-repeat padding-box;
   box-shadow: none;
