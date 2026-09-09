@@ -1,0 +1,126 @@
+/* stylelint-disable no-descending-specificity */
+
+.columns-story-wrapper {
+  box-sizing: border-box;
+}
+
+.columns-story-wrapper .columns-story {
+  box-sizing: border-box;
+}
+
+.columns-story-wrapper .columns-story .columns-story-row {
+  box-sizing: border-box;
+}
+
+.columns-story > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.columns-story img {
+  width: 100%;
+}
+
+.columns-story > div > div {
+  order: 1;
+}
+
+.columns-story > div > .columns-story-img-col {
+  order: 0;
+}
+
+.columns-story > div > .columns-story-img-col img {
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  max-height: 500px;
+}
+
+/* Source rhythm: generous vertical margins around each story (AGCO text-and-asset) */
+.columns-story {
+  margin-top: 4.125rem;
+  margin-bottom: 4.125rem;
+}
+
+.columns-story .columns-story-video-col {
+  order: 0;
+}
+
+.columns-story video {
+  display: block;
+  width: 100%;
+}
+
+
+@media (width >= 900px) {
+  .columns-story {
+    margin-top: 6.0625rem;
+    margin-bottom: 6.0625rem;
+  }
+
+  .columns-story > div {
+    align-items: center;
+    flex-direction: unset;
+
+    /* Source uses a wide inter-column gutter (text-and-asset 8.55%) */
+    gap: 8.55%;
+  }
+
+  /* Text column ~40%, image column ~51% (remainder is the 8.55% gutter),
+     matching the source text-and-asset proportions. */
+  .columns-story > div > div {
+    flex: 0 1 40%;
+    order: unset;
+  }
+
+  .columns-story > div > .columns-story-img-col {
+    flex: 0 1 51%;
+  }
+}
+
+@media (width >= 1200px) {
+  .columns-story {
+    margin-top: 8rem;
+    margin-bottom: 8rem;
+  }
+}
+
+
+
+
+/* Responsive Styles */
+@media (width < 1024px) {
+  .columns-story-container .columns-story-wrapper {
+    padding: 0 5%;
+  }
+
+  .columns-story-container .columns-story-wrapper .columns-story {
+    display: block;
+  }
+
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 20px 0;
+  }
+
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h1,
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h2,
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h3,
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h4,
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h5,
+  .columns-story-container .columns-story-wrapper .columns-story .columns-story-row h6 {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+  }
+
+}
+
+@media (width < 768px) {
+  .columns-story-container .columns-story-wrapper {
+    padding: 0 4%;
+  }
+
+}
