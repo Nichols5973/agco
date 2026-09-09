@@ -48,6 +48,11 @@ const PAGES = [
   ['content/footer.plain.html', `${SITE_ROOT}/footer`],
 ];
 
+// Bump this when producing a new package so it is clearly identifiable and
+// overwrites the previously-installed one in AEM Package Manager.
+const VERSION = '1.2';
+const PKG_NAME = 'agco-index-header-footer';
+
 const OUT = `${REPO}/tools/package/ue-package`;
 const JCR_ROOT = `${OUT}/jcr_root`;
 
@@ -236,14 +241,14 @@ ${filters}
   writeFileSync(`${metaDir}/properties.xml`, `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <entry key="name">agco-index-header-footer</entry>
+    <entry key="name">${PKG_NAME}</entry>
     <entry key="group">agco</entry>
-    <entry key="version">1.0</entry>
+    <entry key="version">${VERSION}</entry>
   </properties>
 `);
 
   // zip it (use Python's zipfile — the `zip` binary is not available in this image)
-  const zip = `${REPO}/tools/package/agco-index-header-footer.zip`;
+  const zip = `${REPO}/tools/package/${PKG_NAME}-${VERSION}.zip`;
   const py = `import zipfile,os\n`
     + `out=${JSON.stringify(zip)}\n`
     + `if os.path.exists(out): os.remove(out)\n`
