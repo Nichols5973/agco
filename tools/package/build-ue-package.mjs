@@ -31,11 +31,11 @@ const components = {
 // franklin.delivery/Nichols5973/agco -> JCR /content/agco).
 const SITE_ROOT = '/content/agco';
 
-// Fragments to convert: [sourcePlainHtml, jcrPagePath]. index/nav/footer are
-// all child nodes of the site root, so installing this package creates a fresh
-// tree without overwriting any sibling pages.
+// Fragments to convert: [sourcePlainHtml, jcrPagePath]. The index IS the
+// site-root node (paths.json maps /content/agco -> /), so it serves as the home
+// page at /. nav/footer are child nodes fetched by header.js/footer.js.
 const PAGES = [
-  ['content/us/en/home/sustainability.plain.html', `${SITE_ROOT}/index`],
+  ['content/us/en/home/sustainability.plain.html', `${SITE_ROOT}`],
   ['content/nav.plain.html', `${SITE_ROOT}/nav`],
   ['content/footer.plain.html', `${SITE_ROOT}/footer`],
 ];
