@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0" jcr:primaryType="cq:Page">
+  <jcr:content cq:template="/libs/core/franklin/templates/page" sling:resourceType="core/franklin/components/page/v1/page" jcr:primaryType="cq:PageContent">
+    <root jcr:primaryType="nt:unstructured" sling:resourceType="core/franklin/components/root/v1/root">
+      <section sling:resourceType="core/franklin/components/section/v1/section" jcr:primaryType="nt:unstructured">
+        <button sling:resourceType="core/franklin/components/button/v1/button" jcr:primaryType="nt:unstructured" link="https://www.agcocorp.com/us/en/home.html" linkText=""/>
+        <text sling:resourceType="core/franklin/components/text/v1/text" jcr:primaryType="nt:unstructured" text="&lt;strong&gt;AGCO (NYSE: AGCO) is a global leader in agricultural machinery and precision agriculture technologies.&lt;/strong&gt;&lt;p&gt;Driven by a Farmer-First strategy, AGCO delivers value through its differentiated leading brands, Fendt™, Massey Ferguson™, PTx™ and Valtra™. AGCO&#x27;s high-performance equipment and smart farming solutions, including brand-agnostic retrofit technologies and autonomous offerings, empower farmers to drive productivity while sustainably feeding the world.&lt;/p&gt;&lt;h4&gt;FOLLOW AGCO&lt;/h4&gt;&lt;p&gt;&lt;a href&#x3D;&quot;https://www.facebook.com/AGCOcorp&quot;&gt;&lt;img src&#x3D;&quot;images/footer-facebook.png&quot; alt&#x3D;&quot;Facebook&quot;&gt;&lt;/a&gt; &lt;a href&#x3D;&quot;https://x.com/agcocorp&quot;&gt;&lt;img src&#x3D;&quot;images/footer-x.png&quot; alt&#x3D;&quot;X&quot;&gt;&lt;/a&gt; &lt;a href&#x3D;&quot;https://www.linkedin.com/company/agco-corporation/&quot;&gt;&lt;img src&#x3D;&quot;images/footer-linkedin.png&quot; alt&#x3D;&quot;LinkedIn&quot;&gt;&lt;/a&gt; &lt;a href&#x3D;&quot;https://www.instagram.com/agcocorp/&quot;&gt;&lt;img src&#x3D;&quot;images/footer-instagram.png&quot; alt&#x3D;&quot;Instagram&quot;&gt;&lt;/a&gt; &lt;a href&#x3D;&quot;https://www.youtube.com/user/agcocorp&quot;&gt;&lt;img src&#x3D;&quot;images/footer-youtube.png&quot; alt&#x3D;&quot;YouTube&quot;&gt;&lt;/a&gt;&lt;/p&gt;&lt;h4&gt;BROWSE AGCO&lt;/h4&gt;&lt;ul&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;https://investors.agcocorp.com/&quot;&gt;Investors&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/contact.html&quot;&gt;Contact&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/contact/facilities-list.html&quot;&gt;AGCO Facilities List&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/merchandise.html&quot;&gt;Merchandise&lt;/a&gt;&lt;/li&gt;
+                    &lt;/ul&gt;&lt;h4&gt;SOLUTIONS&lt;/h4&gt;&lt;ul&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/brands-and-solutions/tractors.html&quot;&gt;Tractors&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/brands-and-solutions/harvesting.html&quot;&gt;Harvesting&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/brands-and-solutions/hay-and-forage.html&quot;&gt;Hay &amp;#x26; Forage&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/brands-and-solutions/crop-care-and-nutrient-management.html&quot;&gt;Crop Care &amp;#x26; Nutrient Management&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/brands-and-solutions/planting-and-soil-preparation.html&quot;&gt;Planting &amp;#x26; Soil Preparation&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/brands-and-solutions/material-handling.html&quot;&gt;Material Handling&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/brands-and-solutions/power-generation.html&quot;&gt;Power Generation&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/brands-and-solutions/water-management.html&quot;&gt;Water Management&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/brands-and-solutions/engines.html&quot;&gt;Engines&lt;/a&gt;&lt;/li&gt;
+                    &lt;/ul&gt;&lt;p&gt;Copyright© 2026 AGCO Corporation. All Rights Reserved.&lt;/p&gt;&lt;ul&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/compliance-center.html&quot;&gt;Compliance Center&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/compliance-center/legal.html&quot;&gt;Terms of Use&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/compliance-center/privacy-statement/privacy-statement-en.html&quot;&gt;Privacy Statement&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/compliance-center/cookie-policy/cookie-policy-en.html&quot;&gt;Cookie Policy&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/compliance-center/california-notice-at-collection.html&quot;&gt;California Notice at Collection&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/compliance-center/do-not-sell.html&quot;&gt;Do Not Sell Or Share My Personal Information&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/about-us/supply-chain-sustainability.html&quot;&gt;Slavery and Human Trafficking Statement&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;https://careers.agcocorp.com/&quot;&gt;Careers&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/compliance-center/accessibility-statement/accessibility-statement-en.html&quot;&gt;Accessibility Statement&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;/us/en/home/compliance-center/cbcr/country-by-country-reporting.html&quot;&gt;Country by Country Reporting&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a href&#x3D;&quot;#&quot;&gt;Cookie Preferences&lt;/a&gt;&lt;/li&gt;
+                    &lt;/ul&gt;"/>
+      </section>
+    </root>
+  </jcr:content>
+</jcr:root>
