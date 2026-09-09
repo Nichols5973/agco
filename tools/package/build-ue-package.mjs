@@ -38,20 +38,21 @@ const components = {
 // /content/agco/language-masters -> / (the home page).
 const SITE_ROOT = '/content/agco/language-masters';
 
-// [sourcePlainHtml, jcrPagePath, pageTitleOverride?]. The index IS the site's
-// language-masters node (maps to /), so it serves as the home page at /.
-// nav/footer are child nodes fetched by header.js/footer.js. When a title
-// override is given we set jcr:title (the browser <title> / page title) to it
-// without touching the authored content file.
+// [sourcePlainHtml, jcrPagePath, pageTitleOverride?]. The home page is the
+// `index` child node under language-masters (confirmed by the Universal Editor
+// URL .../language-masters/index.html); that child serves at the directory URL
+// / and /language-masters/. nav/footer are sibling child nodes fetched by
+// header.js/footer.js. When a title override is given we set jcr:title (the
+// browser <title> / page title) without touching the authored content file.
 const PAGES = [
-  ['content/us/en/home/sustainability.plain.html', `${SITE_ROOT}`, 'Sustainability | AGCO'],
+  ['content/us/en/home/sustainability.plain.html', `${SITE_ROOT}/index`, 'Sustainability | AGCO'],
   ['content/nav.plain.html', `${SITE_ROOT}/nav`],
   ['content/footer.plain.html', `${SITE_ROOT}/footer`],
 ];
 
 // Bump this when producing a new package so it is clearly identifiable and
 // overwrites the previously-installed one in AEM Package Manager.
-const VERSION = '1.3';
+const VERSION = '1.4';
 const PKG_NAME = 'agco-index-header-footer';
 
 const OUT = `${REPO}/tools/package/ue-package`;
