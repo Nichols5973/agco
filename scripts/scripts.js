@@ -1,6 +1,7 @@
 import {
   loadHeader,
   loadFooter,
+  buildBlock,
   decorateButtons as libDecorateButtons,
   decorateIcons,
   decorateSections,
@@ -340,6 +341,42 @@ export async function fetchLanguagePlaceholders() {
   return {}; // default to empty object
 }
 
+// Document-link matcher for the download-list auto-block below.
+const DOC_LINK_RE = /\/content\/dam\/|\.(pdf|xlsx?|docx?|pptx?|zip|csv)(\?|#|$)/i;
+
+/**
+ * Auto-block: a paragraph that is nothing but a run of document-download links
+ * (e.g. the "A Legacy of Progress" report list) should render as the
+ * download-list-docs boxes, matching the source. Some such lists were authored
+ * as loose default content rather than inside a block, so we detect them here
+ * and wrap them into a download-list-docs block before decoration.
+ * @param {Element} main The container element
+ */
+function buildDownloadListBlocks(main) {
+  main.querySelectorAll(':scope p').forEach((p) => {
+    const anchors = [...p.querySelectorAll('a[href]')];
+    // Need at least two document links, and the paragraph must be only links
+    // (no stray prose) — its text should equal the concatenated link labels.
+    if (anchors.length < 2) return;
+    if (!anchors.every((a) => DOC_LINK_RE.test(a.getAttribute('href') || ''))) return;
+    const linkText = anchors.map((a) => a.textContent.trim()).join('').replace(/\s+/g, '');
+    if (p.textContent.trim().replace(/\s+/g, '') !== linkText) return;
+
+    // Build a download-list-docs block: one row, key-value cell "individualAssets"
+    // + a cell holding the links (each in its own <p>, matching parser output).
+    const linksCell = document.createElement('div');
+    anchors.forEach((a) => {
+      const wrap = document.createElement('p');
+      wrap.append(a);
+      linksCell.append(wrap);
+    });
+    const keyCell = document.createElement('div');
+    keyCell.textContent = 'individualAssets';
+    const block = buildBlock('download-list-docs', [[keyCell, linksCell]]);
+    p.replaceWith(block);
+  });
+}
+
 /**
    * Builds all synthetic blocks in a container element.
    * @param {Element} main The container element
@@ -347,6 +384,7 @@ export async function fetchLanguagePlaceholders() {
 function buildAutoBlocks(main) {
   try {
     buildDynamicMediaImages(main);
+    buildDownloadListBlocks(main);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);
