@@ -31,9 +31,15 @@
 
 .columns-story > div > .columns-story-img-col img {
   display: block;
+  width: 100%;
+
+  /* Source uses a large square-ish asset that fills its column. Force a
+     tall aspect and cover-crop so wide source renditions don't letterbox
+     into a short strip. */
+  aspect-ratio: 1 / 1;
+  height: auto;
   object-fit: cover;
   object-position: center;
-  max-height: 500px;
 }
 
 /* Source rhythm: generous vertical margins around each story (AGCO text-and-asset) */
@@ -66,15 +72,17 @@
     gap: 8.55%;
   }
 
-  /* Text column ~40%, image column ~51% (remainder is the 8.55% gutter),
-     matching the source text-and-asset proportions. */
+  /* Source text-and-asset proportions: text column ~56%, image column ~35%
+     (the remainder is the 8.55% inter-column gutter). The image is the
+     smaller column, but it renders as a large square asset. */
   .columns-story > div > div {
-    flex: 0 1 40%;
+    flex: 1 1 auto;
     order: unset;
   }
 
   .columns-story > div > .columns-story-img-col {
-    flex: 0 1 51%;
+    flex: 0 0 35%;
+    align-self: center;
   }
 }
 
