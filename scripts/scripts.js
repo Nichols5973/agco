@@ -489,30 +489,34 @@ async function renderWBDataLayer() {
    * @param {Element} doc The container element
    */
 async function loadEager(doc) {
-  setPageLanguage();
-  decorateTemplateAndTheme();
-  await runExperimentation(doc, experimentationConfig);
-  renderWBDataLayer();
-  const main = doc.querySelector('main');
-  if (main) {
-    try {
-      await decorateMain(main);
-    } catch (e) {
-      // A single block's decorate() must never leave the page hidden. In the
-      // Universal Editor canvas the DOM carries extra data-aue-* wrappers that
-      // can trip rigid block traversal; swallow so the reveal below still runs.
-      // eslint-disable-next-line no-console
-      console.error('decorateMain error (continuing to reveal page):', e);
+  // The body is display:none until `body.appear` is added. Anything in this
+  // function that throws before the reveal leaves the whole page blank (this is
+  // what blanks the Universal Editor canvas, whose DOM differs from delivery).
+  // So every step is guarded and the reveal is guaranteed in a finally block.
+  try {
+    try { setPageLanguage(); } catch (e) { /* non-fatal */ }
+    try { decorateTemplateAndTheme(); } catch (e) { /* non-fatal */ }
+    try { await runExperimentation(doc, experimentationConfig); } catch (e) { /* non-fatal */ }
+    try { renderWBDataLayer(); } catch (e) { /* non-fatal */ }
+    const main = doc.querySelector('main');
+    if (main) {
+      try {
+        await decorateMain(main);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('decorateMain error (continuing to reveal page):', e);
+      }
+      document.body.classList.add('appear');
+      try {
+        await loadSection(main.querySelector('.section'), waitForFirstImage);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('loadSection error:', e);
+      }
     }
-    // Always reveal — body is display:none until `appear`, so this must run
-    // even if decoration above threw, or the whole page renders blank.
+  } finally {
+    // Fail-safe: guarantee the page is never left hidden, whatever happened.
     document.body.classList.add('appear');
-    try {
-      await loadSection(main.querySelector('.section'), waitForFirstImage);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('loadSection error:', e);
-    }
   }
 
   try {
