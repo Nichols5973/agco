@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workspaceFilter version="1.0">
-    <filter root="/content/agco/index"/>
-    <filter root="/content/agco/nav"/>
-    <filter root="/content/agco/footer"/>
+    <filter root="/content/agco/language-masters/index"/>
+    <filter root="/content/agco/language-masters/nav"/>
+    <filter root="/content/agco/language-masters/footer"/>
 </workspaceFilter>
