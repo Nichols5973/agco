@@ -103,7 +103,7 @@ function renderEmpty(block, message) {
   block.append(empty);
 }
 
-export default function decorate(block) {
+function decorateImpl(block) {
   const config = readConfig(block);
   // Pull in any loose document link(s) authored just before the block so the
   // whole set renders as one row of boxes (source layout).
@@ -141,4 +141,18 @@ export default function decorate(block) {
   list.className = 'download-docs__list';
   links.forEach((link) => list.append(buildDownloadBox(link)));
   block.append(list);
+}
+
+/**
+ * Resilient wrapper: a decoration error must never abort the page render
+ * lifecycle (which would leave body at display:none and blank the page/UE
+ * canvas). Log and continue so the block degrades to its raw content.
+ */
+export default function decorate(block) {
+  try {
+    decorateImpl(block);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('download-list-docs decorate failed:', e);
+  }
 }

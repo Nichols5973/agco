@@ -1,7 +1,7 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
 
-export default function decorate(block) {
+function decorateImpl(block) {
   const ul = document.createElement('ul');
   [...block.children].forEach((row) => {
     const li = document.createElement('li');
@@ -59,4 +59,18 @@ export default function decorate(block) {
 
   block.textContent = '';
   block.append(ul);
+}
+
+/**
+ * Resilient wrapper: a decoration error must never abort the page render
+ * lifecycle (which would leave body at display:none and blank the page/UE
+ * canvas). Log and continue so the block degrades to its raw content.
+ */
+export default function decorate(block) {
+  try {
+    decorateImpl(block);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('cards-framework decorate failed:', e);
+  }
 }

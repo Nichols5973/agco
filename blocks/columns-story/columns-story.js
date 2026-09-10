@@ -98,7 +98,8 @@ function isVideoLink(link) {
   }
 }
 
-export default function decorate(block) {
+function decorateImpl(block) {
+  if (!block.firstElementChild) return;
   const cols = [...block.firstElementChild.children];
   block.classList.add(`columns-story-${cols.length}-cols`);
 
@@ -173,4 +174,18 @@ export default function decorate(block) {
       }
     });
   });
+}
+
+/**
+ * Resilient wrapper: a decoration error must never abort the page render
+ * lifecycle (which would leave body at display:none and blank the page/UE
+ * canvas). Log and continue so the block degrades to its raw content.
+ */
+export default function decorate(block) {
+  try {
+    decorateImpl(block);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('columns-story decorate failed:', e);
+  }
 }

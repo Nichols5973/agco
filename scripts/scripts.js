@@ -495,9 +495,24 @@ async function loadEager(doc) {
   renderWBDataLayer();
   const main = doc.querySelector('main');
   if (main) {
-    await decorateMain(main);
+    try {
+      await decorateMain(main);
+    } catch (e) {
+      // A single block's decorate() must never leave the page hidden. In the
+      // Universal Editor canvas the DOM carries extra data-aue-* wrappers that
+      // can trip rigid block traversal; swallow so the reveal below still runs.
+      // eslint-disable-next-line no-console
+      console.error('decorateMain error (continuing to reveal page):', e);
+    }
+    // Always reveal — body is display:none until `appear`, so this must run
+    // even if decoration above threw, or the whole page renders blank.
     document.body.classList.add('appear');
-    await loadSection(main.querySelector('.section'), waitForFirstImage);
+    try {
+      await loadSection(main.querySelector('.section'), waitForFirstImage);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('loadSection error:', e);
+    }
   }
 
   try {

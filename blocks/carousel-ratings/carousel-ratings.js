@@ -47,7 +47,7 @@ function extractCarouselConfig(block) {
   return config;
 }
 
-export default function decorate(block) {
+function decorateImpl(block) {
   setCarouselItems(2);
 
   const carouselConfig = extractCarouselConfig(block);
@@ -125,4 +125,18 @@ export default function decorate(block) {
 
   createSlider(block);
   finalizeCarouselImageZoom(block);
+}
+
+/**
+ * Resilient wrapper: a decoration error must never abort the page render
+ * lifecycle (which would leave body at display:none and blank the page/UE
+ * canvas). Log and continue so the block degrades to its raw content.
+ */
+export default function decorate(block) {
+  try {
+    decorateImpl(block);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('carousel-ratings decorate failed:', e);
+  }
 }

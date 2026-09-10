@@ -77,7 +77,7 @@ function hasMeaningfulContent(div) {
  *
  * @param {Element} block
  */
-export default function decorate(block) {
+function decorateImpl(block) {
   // --- Capture direct child divs BEFORE any DOM mutations ---
   const childDivs = [...block.querySelectorAll(':scope > div')];
   const assetDiv = childDivs[0]; // asset (image/video) + alt
@@ -224,4 +224,18 @@ export default function decorate(block) {
   childDivs.forEach((div, index) => {
     if (index > 1 && div) div.style.display = 'none';
   });
+}
+
+/**
+ * Resilient wrapper: a decoration error must never abort the page render
+ * lifecycle (which would leave body at display:none and blank the page/UE
+ * canvas). Log and continue so the block degrades to its raw content.
+ */
+export default function decorate(block) {
+  try {
+    decorateImpl(block);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('hero-immersive decorate failed:', e);
+  }
 }
