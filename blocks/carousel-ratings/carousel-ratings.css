@@ -10,6 +10,13 @@
   box-shadow: none;
 }
 
+/* Close ~25px of white space below the ESG charts. The global section rule
+   `main > .section { margin: 40px 0 }` (specificity 0,1,1) sets the bottom
+   gap; override it with a higher-specificity selector to trim 40px -> 15px. */
+main > .section.carousel-ratings-container {
+  margin-bottom: 15px;
+}
+
 /* The flex column above is for the carousel's own layout. When a carousel
    shares a section with other blocks, this column's `align-items: flex-start`
    would otherwise shrink every sibling wrapper to its content width (collapsing
